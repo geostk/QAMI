@@ -1,0 +1,68 @@
+classdef uidata
+    %UNTITLED5 Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties (SetAccess = public, GetAccess = public)
+        pathName
+        fileNames
+        fileAmount
+        fileNamesIJ
+        fileNameOrderIJ
+        timeNumber%intervals
+        locationNumber%sliceNums
+        series
+        showTimeNumber
+        showLoctNumber
+        flagGoodQual
+        allCanvas%弃用
+        nCanvas%弃用
+        canvasHeight%弃用
+        canvasWidth%弃用
+        canvasInitX%弃用
+        canvasInitY%弃用
+        canvasPosInv
+        figureHeight
+        figureWidth
+        curSliceRoi%当前被分割层的Roi
+        curSegSlice%当前被分割的层
+        curDcm%弃用
+        curCanvas
+        curSeries
+        curSlice
+        curSelectedSeries%弃用
+        curSelectedSlice%弃用
+        dcmInfo
+        imgShowSize
+        imgOriSize
+        imgShowPos
+        
+        allRoi
+        curPt1
+        curPt2
+        isDrawingRoi
+        
+        contrast
+        luminosity
+    end
+    
+    methods
+        function obj=uidata()
+          % Not initializing anything here, everything gets set to [] as default
+          fileAmount = 0;
+          intervals = 1;
+          sliceNums = 1;
+          canvasInitX = 150;
+          canvasInitY = 0;
+          canvasPosInv = 5;
+          figureHeight = 750;
+          figureWidth = 1200;
+          curCanvas = 0;
+          curSeries = 0;
+          curSlice = 0;
+          curSegSlice = 0;
+          curSliceRoi = 0;
+        end
+    end
+    
+end
+

@@ -1,0 +1,1696 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>ui</title>
+      <meta name="generator" content="MATLAB 7.6">
+      <meta name="date" content="2012-12-15">
+      <meta name="m-file" content="ui"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content"><pre class="codeinput"><span class="keyword">function</span> varargout = ui(varargin)
+<span class="comment">% UI M-file for ui.fig</span>
+<span class="comment">%      UI, by itself, creates a new UI or raises the existing</span>
+<span class="comment">%      singleton*.</span>
+<span class="comment">%</span>
+<span class="comment">%      H = UI returns the handle to a new UI or the handle to</span>
+<span class="comment">%      the existing singleton*.</span>
+<span class="comment">%</span>
+<span class="comment">%      UI('CALLBACK',hObject,eventData,handles,...) calls the local</span>
+<span class="comment">%      function named CALLBACK in UI.M with the given input arguments.</span>
+<span class="comment">%</span>
+<span class="comment">%      UI('Property','Value',...) creates a new UI or raises the</span>
+<span class="comment">%      existing singleton*.  Starting from the left, property value pairs are</span>
+<span class="comment">%      applied to the GUI before ui_OpeningFcn gets called.  An</span>
+<span class="comment">%      unrecognized property name or invalid value makes property application</span>
+<span class="comment">%      stop.  All inputs are passed to ui_OpeningFcn via varargin.</span>
+<span class="comment">%</span>
+<span class="comment">%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one</span>
+<span class="comment">%      instance to run (singleton)".</span>
+<span class="comment">%</span>
+<span class="comment">% See also: GUIDE, GUIDATA, GUIHANDLES</span>
+
+<span class="comment">% Edit the above text to modify the response to help ui</span>
+
+<span class="comment">% Last Modified by GUIDE v2.5 09-Dec-2012 19:04:04</span>
+
+<span class="comment">% Begin initialization code - DO NOT EDIT</span>
+gui_Singleton = 1;
+gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+                   <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+                   <span class="string">'gui_OpeningFcn'</span>, @ui_OpeningFcn, <span class="keyword">...</span>
+                   <span class="string">'gui_OutputFcn'</span>,  @ui_OutputFcn, <span class="keyword">...</span>
+                   <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+                   <span class="string">'gui_Callback'</span>,   []);
+<span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+<span class="keyword">else</span>
+    gui_mainfcn(gui_State, varargin{:});
+<span class="keyword">end</span>
+<span class="comment">% End initialization code - DO NOT EDIT</span>
+
+<span class="comment">% --- Executes just before ui is made visible.</span>
+<span class="keyword">function</span> ui_OpeningFcn(hObject, eventdata, handles, varargin)
+<span class="comment">% This function has no output args, see OutputFcn.</span>
+<span class="comment">% hObject    handle to figure</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">% varargin   command line arguments to ui (see VARARGIN)</span>
+
+handles.uidata=[];
+
+handles.uidata=uidata();
+
+handles.uidata.fileAmount = 0;
+handles.uidata.timeNumber = 1;
+handles.uidata.locationNumber = 1;
+handles.uidata.showTimeNumber = 1;
+handles.uidata.showLoctNumber = 1;
+handles.uidata.canvasInitX = 200;
+handles.uidata.canvasInitY = 0;
+handles.uidata.canvasPosInv = 5;
+handles.uidata.figureHeight = 250;
+handles.uidata.figureWidth = 1200;
+handles.uidata.curCanvas = 0;
+handles.uidata.curSeries = 0;
+handles.uidata.curSlice = 0;
+handles.uidata.curSelectedSeries = 0;
+handles.uidata.curSelectedSlice = 0;
+handles.uidata.contrast = 0;
+handles.uidata.luminosity = 0;
+
+handles.uidata.flagGoodQual = [];
+handles.uidata.allRoi = [];
+handles.uidata.curPt1 = [];
+handles.uidata.curPt2 = [];
+handles.uidata.isDrawingRoi = 0;
+<span class="comment">% Choose default command line output for ui</span>
+handles.output = hObject;
+set(gcf,<span class="string">'DoubleBuffer'</span>,<span class="string">'on'</span>);
+<span class="comment">%import the smiley image into matlab</span>
+<span class="comment">%if image is not in the same directory as the GUI files, you must use the</span>
+<span class="comment">%full path name of the image file</span>
+tglBtnZoomIn = importdata(<span class="string">'icons\tool_zoom_in.png'</span>);
+<span class="comment">%tglBtnZoomOut = importdata('icons\tool_zoom_out.png');</span>
+tglBtnDataCursor = importdata(<span class="string">'icons\tool_data_cursor.png'</span>);
+<span class="comment">% tglbtnzoom = importdata('tool_zoom_in.png');</span>
+<span class="comment">% tglbtnzoom = importdata('tool_zoom_in.png');</span>
+
+<span class="comment">%set the smiley image as the button background</span>
+set(handles.tglBtnZoom,<span class="string">'CDATA'</span>,im2double(tglBtnZoomIn.cdata));
+<span class="comment">%set(handles.tglBtnZoomReset,'CDATA',im2double(tglBtnZoomOut.cdata));</span>
+set(handles.tglBtnDataCursor,<span class="string">'CDATA'</span>,im2double(tglBtnDataCursor.cdata));
+
+<span class="comment">% Update handles structure</span>
+guidata(hObject, handles);
+
+<span class="comment">% UIWAIT makes ui wait for user response (see UIRESUME)</span>
+<span class="comment">% uiwait(handles.figure1);</span>
+
+<span class="comment">% --- Outputs from this function are returned to the command line.</span>
+<span class="keyword">function</span> varargout = ui_OutputFcn(hObject, eventdata, handles)
+<span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+<span class="comment">% hObject    handle to figure</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Get default command line output from handles structure</span>
+varargout{1} = handles.output;
+
+<span class="comment">% --- Executes on button press in btnOpen.</span>
+<span class="keyword">function</span> btnOpen_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnOpen (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Use file open dialog to get a file</span>
+<span class="keyword">if</span> (~isempty(handles.uidata.pathName))
+    [fname,pname]=uigetfile({<span class="string">'*.dcm'</span>,<span class="string">'DICOM file'</span>; <span class="string">'*.jpg;*.png'</span>, <span class="string">'Image files'</span>},<span class="string">'Please select a DICOM file.'</span>,handles.uidata.pathName);
+<span class="keyword">else</span>
+    [fname,pname]=uigetfile({<span class="string">'*.dcm'</span>,<span class="string">'DICOM file'</span>; <span class="string">'*.jpg;*.png'</span>, <span class="string">'Image files'</span>},<span class="string">'Please select a DICOM file.'</span>);
+<span class="keyword">end</span>
+tic
+<span class="comment">% Find files with the same extenstion and fill the list box</span>
+<span class="keyword">if</span> ((fname~=0))
+    handles.uidata.pathName = pname;
+
+    <span class="comment">% Find file extension</span>
+    [pathstr, aa, ext] = fileparts(strcat(pname, fname));
+    <span class="keyword">if</span> (~isempty(ext))
+        extension=strcat(<span class="string">'*'</span>, ext);
+    <span class="keyword">else</span>
+        extension=<span class="string">'*'</span>;
+    <span class="keyword">end</span>
+    <span class="comment">% Get file list</span>
+    dirFolder=strcat(pname,extension);
+    FileList=dir(dirFolder);
+    Total=length(FileList);
+    n=0;
+    index = 1;
+    <span class="keyword">for</span> k=1:1:Total
+        <span class="keyword">if</span> (~isdir(FileList(k).name))
+            n=n+1;
+            filename = {FileList(k).name};
+            fileList(n)= filename;
+            <span class="keyword">if</span> strcmpi(filename, fname)
+                index = k;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    handles.uidata.fileAmount = n;
+
+    <span class="keyword">if</span> (n&gt;0)
+        fileList = fileList(1:n);
+        handles.uidata.fileNames = fileList;
+        set(handles.lbFileList,<span class="string">'string'</span>,fileList);
+        set(handles.lbFileList,<span class="string">'value'</span>, 1);
+        set(handles.txtFileAmount,<span class="string">'string'</span>,[<span class="string">'File Amount '</span> num2str(n)]);
+        guidata(hObject, handles);
+    <span class="keyword">end</span>
+    <span class="keyword">for</span> i=1:n
+        handles.uidata.dcmInfo{i} = dicominfo([pname fileList{i}]);
+    <span class="keyword">end</span>
+    handles.uidata.timeNumber = handles.uidata.dcmInfo{1}.NumberOfTemporalPositions;
+    handles.uidata.locationNumber = handles.uidata.dcmInfo{1}.ImagesInAcquisition/<span class="keyword">...</span>
+        handles.uidata.dcmInfo{1}.NumberOfTemporalPositions;
+    set(handles.edtTimeNumber,<span class="string">'String'</span>,num2str(handles.uidata.timeNumber));
+    set(handles.edtLocationNumber,<span class="string">'String'</span>,num2str(handles.uidata.locationNumber));
+
+    tmpImg = dicomread(handles.uidata.dcmInfo{1});
+    maxx = max(max(tmpImg));
+    minn = min(min(tmpImg));
+    set(handles.sldWinCenter,<span class="string">'value'</span>,(maxx-minn)/2.0+minn);
+    set(handles.sldWinWidth,<span class="string">'value'</span>,maxx-minn);
+
+    handles.uidata.fileNamesIJ = cell(handles.uidata.timeNumber,handles.uidata.locationNumber);
+    handles.uidata.fileNameOrderIJ = zeros(handles.uidata.timeNumber,handles.uidata.locationNumber);
+    <span class="keyword">for</span> i=1:n
+        timeOrder = handles.uidata.dcmInfo{i}.TemporalPositionIdentifier;
+        locaOrder = mod(handles.uidata.dcmInfo{i}.InstanceNumber,handles.uidata.locationNumber);
+        <span class="keyword">if</span> locaOrder==0
+            locaOrder = 10;
+        <span class="keyword">end</span>
+        handles.uidata.fileNamesIJ{timeOrder,locaOrder} = handles.uidata.fileNames{i};
+        handles.uidata.fileNameOrderIJ(timeOrder,locaOrder) = i;
+    <span class="keyword">end</span>
+
+    handles.uidata.curSeries = 1;
+    handles.uidata.curSlice = 1;
+    handles.uidata.allRoi = zeros(n,4);
+    handles.uidata.flagGoodQual = zeros(handles.uidata.timeNumber,handles.uidata.locationNumber);
+    handles = loadDcmImages(handles);
+    set(handles.edtDispNumTime,<span class="string">'String'</span>,num2str(handles.uidata.curSeries));
+    set(handles.edtDispNumLoc,<span class="string">'String'</span>,num2str(handles.uidata.curSlice));
+
+    minValue = 1;
+    maxValue = handles.uidata.locationNumber;
+    set(handles.sldSlice,<span class="string">'min'</span>,minValue,<span class="string">'max'</span>,maxValue);
+    set(handles.sldSlice,<span class="string">'sliderstep'</span>,[1/(maxValue-minValue) 1/(maxValue-minValue)]);
+    set(handles.sldSlice,<span class="string">'value'</span>,maxValue);
+    set(handles.sldSlice,<span class="string">'visible'</span>,<span class="string">'on'</span>);
+    minValue = 1;
+    maxValue = n/handles.uidata.locationNumber;
+    set(handles.sldSeries,<span class="string">'Min'</span>,minValue,<span class="string">'max'</span>,maxValue);
+    set(handles.sldSeries,<span class="string">'sliderstep'</span>,[1/(maxValue-minValue) 1/(maxValue-minValue)]);
+    set(handles.sldSeries,<span class="string">'value'</span>,minValue);
+    set(handles.sldSeries,<span class="string">'visible'</span>,<span class="string">'on'</span>);
+
+    guidata(hObject,handles);
+<span class="keyword">end</span>
+toc
+
+<span class="comment">% --- Executes on selection change in lbFileList.</span>
+<span class="keyword">function</span> lbFileList_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to lbFileList (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns lbFileList contents as cell array</span>
+<span class="comment">%        contents{get(hObject,'Value')} returns selected item from lbFileList</span>
+<span class="comment">%todo:1. get the index of selected image</span>
+<span class="comment">%todo:2. update the curSeries and curSlice in handles.uidata</span>
+<span class="comment">%todo:3. reload the image</span>
+<span class="comment">%todo:4. update the text control edtDispNumLoc and edtDispNumTime and the</span>
+<span class="comment">%        two sliders and reset tglBtnDrawRoi</span>
+singleIndex = get(hObject,<span class="string">'Value'</span>);
+
+[curSlice curSeries] = singleInd2doubleInd(singleIndex,handles);
+<span class="keyword">if</span> handles.uidata.curSeries == curSeries &amp;&amp; handles.uidata.curSlice == curSlice
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+handles.uidata.curSeries = curSeries;
+handles.uidata.curSlice = curSlice;
+
+handles = loadDcmImages(handles);
+
+set(handles.edtDispNumLoc,<span class="string">'String'</span>,num2str(handles.uidata.curSlice));
+set(handles.edtDispNumTime,<span class="string">'String'</span>,num2str(handles.uidata.curSeries));
+set(handles.sldSeries,<span class="string">'value'</span>,curSeries);
+minValue = get(handles.sldSlice,<span class="string">'min'</span>);
+maxValue = get(handles.sldSlice,<span class="string">'max'</span>);
+set(handles.sldSlice,<span class="string">'value'</span>,minValue + maxValue - curSlice);
+set(handles.tglBtnDrawRoi,<span class="string">'Value'</span>,0);
+guidata(hObject,handles);
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> lbFileList_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to lbFileList (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: listbox controls usually have a white background on Windows.</span>
+<span class="comment">%       See ISPC and COMPUTER.</span>
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> edtTimeNumber_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtTimeNumber (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'String') returns contents of edtTimeNumber as text</span>
+<span class="comment">%        str2double(get(hObject,'String')) returns contents of edtTimeNumber as a double</span>
+
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> edtTimeNumber_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtTimeNumber (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+<span class="comment">%       See ISPC and COMPUTER.</span>
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> edtLocationNumber_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtLocationNumber (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'String') returns contents of edtLocationNumber as text</span>
+<span class="comment">%        str2double(get(hObject,'String')) returns contents of edtLocationNumber as a double</span>
+
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> edtLocationNumber_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtLocationNumber (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+<span class="comment">%       See ISPC and COMPUTER.</span>
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on button press in btnSaveRoiFlags.</span>
+<span class="keyword">function</span> btnSaveRoiFlags_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnSaveRoiFlags (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+pname = handles.uidata.pathName;
+roi = handles.uidata.allRoi;
+flags = handles.uidata.flagGoodQual;
+save([pname <span class="string">'roiflags.mat'</span>],<span class="string">'roi'</span>,<span class="string">'flags'</span>);
+
+
+<span class="comment">% --- Executes on button press in btnSetRoiFlags.</span>
+<span class="keyword">function</span> btnSetRoiFlags_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnSetRoiFlags (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+pname = handles.uidata.pathName;
+<span class="keyword">if</span> exist([pname <span class="string">'roiflags.mat'</span>],<span class="string">'file'</span>)
+    load([pname <span class="string">'roiflags.mat'</span>]);
+    handles.uidata.allRoi = roi;
+    handles.uidata.flagGoodQual = flags;
+    guidata(hObject,handles);
+<span class="keyword">end</span>
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
+
+<span class="comment">% --- Executes on button press in btnSeg.</span>
+<span class="keyword">function</span> btnSeg_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnSeg (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+
+<span class="comment">% --- Executes on button press in btnSaveSeg.</span>
+<span class="keyword">function</span> btnSaveSeg_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnSaveSeg (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="keyword">function</span> [handles]=loadDcmImages(handles)
+<span class="comment">%todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi</span>
+<span class="comment">%todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively</span>
+<span class="comment">%todo:3. process the oriImg according to the window width and window</span>
+<span class="comment">%        center,then show it.</span>
+<span class="comment">%todo:4. if the image was marked goodqual,draw the yellow box around it.</span>
+<span class="comment">%        if the image has ori, draw ori box,update the ckbGoodQual control</span>
+
+curSeries = handles.uidata.curSeries;
+curSlice = handles.uidata.curSlice;
+curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+<span class="comment">% luminosity = handles.uidata.luminosity;</span>
+<span class="comment">% contrasts = handles.uidata.contrast;</span>
+flagGoodQual = handles.uidata.flagGoodQual(curSeries,curSlice);
+curRoi = handles.uidata.allRoi(curIndex,:);
+
+oriImg = double(dicomread(handles.uidata.dcmInfo{curIndex}));
+maxx=max(max(oriImg));
+minn=min(min(oriImg));
+set(handles.sldWinCenter,<span class="string">'max'</span>,maxx);
+set(handles.sldWinCenter,<span class="string">'min'</span>,minn);
+set(handles.sldWinWidth,<span class="string">'max'</span>,maxx-minn);
+set(handles.sldWinWidth,<span class="string">'min'</span>,0);
+tmpW =  get(handles.sldWinWidth,<span class="string">'Value'</span>);
+tmpC = get(handles.sldWinCenter,<span class="string">'Value'</span>);
+<span class="keyword">if</span> (tmpC &gt; maxx)
+    set(handles.sldWinCenter,<span class="string">'value'</span>,maxx);
+<span class="keyword">else</span> <span class="keyword">if</span> (tmpC&lt; minn)
+        set(handles.sldWinCenter,<span class="string">'value'</span>,minn);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> (tmpW &gt; (maxx-minn))
+    set(handles.sldWinWidth,<span class="string">'value'</span>,maxx-minn);
+<span class="keyword">end</span>
+
+imgToShow = visualProcess(oriImg,handles);
+imshow(imgToShow,<span class="string">'parent'</span>,handles.axesImg);
+
+<span class="comment">% pos = get(handles.axesImg,'position');</span>
+tpos(1) = 256; tpos(2) = 1; tpos(3) = 1; tpos(4) = 256;
+tglDrawState = get(handles.tglBtnDrawRoi,<span class="string">'Value'</span>);
+<span class="keyword">if</span> flagGoodQual == 1 &amp;&amp; handles.uidata.isDrawingRoi == 0
+    drawBoxes(handles.axesImg,tpos,[1 1 0]);
+<span class="keyword">end</span>
+<span class="keyword">if</span> sum(curRoi)&gt;0 &amp;&amp; handles.uidata.isDrawingRoi == 0
+    drawBoxes(handles.axesImg,curRoi,[0 1 0]);
+<span class="keyword">end</span>
+set(handles.ckbGoodQual,<span class="string">'Value'</span>,flagGoodQual);
+
+<span class="keyword">function</span> drawBoxes(h,pos,color)
+axes(h)
+hold <span class="string">on</span>
+plot(h,[pos(3) pos(4) pos(4) pos(3 ) pos(3)],[pos(1) pos(1) pos(2) pos(2) pos(1)],<span class="string">'color'</span>,color,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,3);
+hold <span class="string">off</span>
+
+<span class="keyword">function</span> edtDispNumTime_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtDispNumTime (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'String') returns contents of edtDispNumTime as text</span>
+<span class="comment">%        str2double(get(hObject,'String')) returns contents of edtDispNumTime as a double</span>
+
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> edtDispNumTime_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtDispNumTime (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+<span class="comment">%       See ISPC and COMPUTER.</span>
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> edtDispNumLoc_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtDispNumLoc (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'String') returns contents of edtDispNumLoc as text</span>
+<span class="comment">%        str2double(get(hObject,'String')) returns contents of edtDispNumLoc as a double</span>
+
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> edtDispNumLoc_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to edtDispNumLoc (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+<span class="comment">%       See ISPC and COMPUTER.</span>
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on button press in ckbGoodQual.</span>
+<span class="keyword">function</span> ckbGoodQual_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to ckbGoodQual (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hint: get(hObject,'Value') returns toggle state of ckbGoodQual</span>
+<span class="comment">%todo:1. get curSlice and curSeries</span>
+<span class="comment">%todo:2. update the handles.uidata.flagGoodQual</span>
+<span class="comment">%todo:3. if qoodquality ,draw yellow box outside the axesImg</span>
+
+curSlice = handles.uidata.curSlice;
+curSeries = handles.uidata.curSeries;
+
+fgq = get(hObject,<span class="string">'Value'</span>);
+handles.uidata.flagGoodQual(curSeries,curSlice) = fgq;
+
+<span class="keyword">if</span> fgq == 1
+<span class="comment">%     pos = get(handles.axesImg,'Position');</span>
+    ymin = 1
+    ymax = 256;
+    xmin = 1;
+    xmax = 256;
+    drawBoxes(handles.axesImg,[ymax ymin xmin xmax],[1 1 0]);
+<span class="keyword">else</span>
+    loadDcmImages(handles);
+<span class="keyword">end</span>
+guidata(hObject,handles);
+
+<span class="comment">% --- Executes on slider movement.</span>
+<span class="keyword">function</span> sldWinWidth_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldWinWidth (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'Value') returns position of slider</span>
+<span class="comment">%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider</span>
+<span class="comment">%todo: retrieve the window width,update the uidata.contrast ,reload the current Img.</span>
+handles.uidata.contrast = get(handles.sldWinWidth,<span class="string">'value'</span>);
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
+
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> sldWinWidth_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldWinWidth (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: slider controls usually have a light gray background.</span>
+<span class="keyword">if</span> isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,[.9 .9 .9]);
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on slider movement.</span>
+<span class="keyword">function</span> sldWinCenter_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldWinCenter (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'Value') returns position of slider</span>
+<span class="comment">%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider</span>
+<span class="comment">%todo: retrieve the window center,update uidata.luminosity(winCenter) , reload the curImg</span>
+
+handles.uidata.luminosity = get(handles.sldWinCenter,<span class="string">'value'</span>);
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
+
+
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> sldWinCenter_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldWinCenter (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: slider controls usually have a light gray background.</span>
+<span class="keyword">if</span> isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,[.9 .9 .9]);
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on slider movement.</span>
+<span class="keyword">function</span> sldSlice_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldSlice (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'Value') returns position of slider</span>
+<span class="comment">%        get(hObject,'Min') and get(hObject,'Max') to determine range of</span>
+<span class="comment">%        slider</span>
+<span class="comment">%todo:1. get the value of slider</span>
+<span class="comment">%todo:2. load the image if curSlice changed</span>
+<span class="comment">%todo:3. update the edtDiapNumLoc and lbFileList and reset tglBtnDrawRoi</span>
+
+minValue = get(handles.sldSlice,<span class="string">'min'</span>);
+maxValue = get(handles.sldSlice,<span class="string">'max'</span>);
+oldSlice = handles.uidata.curSlice;
+handles.uidata.curSlice = minValue + maxValue - floor(get(handles.sldSlice,<span class="string">'Value'</span>));
+
+<span class="keyword">if</span> handles.uidata.curSlice &lt; 1 || handles.uidata.curSlice &gt; handles.uidata.locationNumber
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+<span class="keyword">if</span> oldSlice == handles.uidata.curSlice
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+handles = loadDcmImages(handles);
+
+set(handles.edtDispNumLoc,<span class="string">'String'</span>,num2str(handles.uidata.curSlice));
+set(handles.lbFileList,<span class="string">'value'</span>,doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
+set(handles.tglBtnDrawRoi,<span class="string">'Value'</span>,0);
+guidata(hObject,handles);
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> sldSlice_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldSlice (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: slider controls usually have a light gray background.</span>
+<span class="keyword">if</span> isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,[.9 .9 .9]);
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on slider movement.</span>
+<span class="keyword">function</span> sldSeries_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldSeries (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hints: get(hObject,'Value') returns position of slider</span>
+<span class="comment">%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider</span>
+<span class="comment">%todo:1. get the current value of the slider</span>
+<span class="comment">%todo:2. reload the iamge if series changed</span>
+<span class="comment">%todo:3. update the text control edtDispNumTime and listbox control</span>
+<span class="comment">%        lbFileList,respectively. reset tglBtnDrawRoi</span>
+oldSeries = handles.uidata.curSeries;
+handles.uidata.curSeries = ceil(get(handles.sldSeries,<span class="string">'Value'</span>));
+
+<span class="keyword">if</span> handles.uidata.curSeries &lt; 1 || handles.uidata.curSeries &gt; handles.uidata.timeNumber
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+<span class="keyword">if</span> oldSeries == handles.uidata.curSeries
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+handles = loadDcmImages(handles);
+
+set(handles.edtDispNumTime,<span class="string">'String'</span>,num2str(handles.uidata.curSeries));
+set(handles.lbFileList,<span class="string">'Value'</span>,doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
+set(handles.tglBtnDrawRoi,<span class="string">'Value'</span>,0);
+guidata(hObject,handles);
+
+<span class="comment">% --- Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> sldSeries_CreateFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to sldSeries (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+
+<span class="comment">% Hint: slider controls usually have a light gray background.</span>
+<span class="keyword">if</span> isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,[.9 .9 .9]);
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on button press in btnTest.</span>
+<span class="keyword">function</span> btnTest_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnTest (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo: just for some tests.</span>
+set(handles.edtDispNumTime,<span class="string">'string'</span>,<span class="string">'2'</span>);
+
+
+<span class="comment">% --- Executes on button press in tglBtnZoomReset.</span>
+<span class="keyword">function</span> tglBtnZoomReset_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to tglBtnZoomReset (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hint: get(hObject,'Value') returns toggle state of tglBtnZoomReset</span>
+<span class="comment">%todo:1. get the toggle state</span>
+<span class="comment">%todo:2. open or close the zoom function according to the state</span>
+
+
+<span class="comment">% --- Executes on button press in tglBtnZoom.</span>
+<span class="keyword">function</span> tglBtnZoom_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to tglBtnZoom (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hint: get(hObject,'Value') returns toggle state of tglBtnZoom</span>
+<span class="comment">%todo: set the zoom state to the value of hObjet.</span>
+tglbtnState = get(hObject,<span class="string">'value'</span>);
+<span class="keyword">if</span> tglbtnState == 1
+    zoom <span class="string">on</span>;
+<span class="keyword">else</span>
+    zoom <span class="string">off</span>;
+<span class="keyword">end</span>
+
+<span class="comment">% --- Executes on button press in btnZoomReset.</span>
+<span class="keyword">function</span> btnZoomReset_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnZoomReset (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo: zoom reset.</span>
+<span class="comment">% zoom reset;</span>
+<span class="comment">% guidata(hObject,handles);</span>
+
+<span class="keyword">function</span> [slice series] = singleInd2doubleInd(singleIndex,handles)
+<span class="comment">%todo:1. get the whole location</span>
+<span class="comment">%todo:2. compute the current series and current slice</span>
+
+wholeSlice = handles.uidata.locationNumber;
+
+slice = mod(singleIndex,wholeSlice);
+<span class="keyword">if</span> slice == 0
+    slice = wholeSlice;
+<span class="keyword">end</span>
+series = ceil(singleIndex / wholeSlice);
+
+<span class="keyword">function</span> singleIndex = doubleInd2singleInd(slice,series,handles)
+<span class="comment">%todo: get the whole slice,compute the singleIndex</span>
+
+wholeSlice = handles.uidata.locationNumber;
+singleIndex = wholeSlice * (series - 1) + slice;
+
+
+<span class="comment">% --- Executes on button press in tglBtnDataCursor.</span>
+<span class="keyword">function</span> tglBtnDataCursor_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to tglBtnDataCursor (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hint: get(hObject,'Value') returns toggle state of tglBtnDataCursor</span>
+<span class="comment">%todo:1. on or off the datacursormode according to the tgbtn state.</span>
+
+tglbtnState = get(handles.tglBtnDataCursor,<span class="string">'value'</span>);
+<span class="keyword">if</span> tglbtnState == 0
+    datacursormode <span class="string">off</span>;
+    <span class="keyword">return</span>;
+<span class="keyword">else</span>
+    datacursormode <span class="string">on</span>;
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on button press in btnStatInfo.</span>
+<span class="keyword">function</span> btnStatInfo_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnStatInfo (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo:1. if it is in datacursormode,get the position in pixel</span>
+<span class="comment">%todo:2. read all the dcm files, and collect all the gray value in arr</span>
+<span class="comment">%todo:3. display it in axesStat</span>
+
+tglbtnState = get(handles.tglBtnDataCursor,<span class="string">'value'</span>);
+<span class="keyword">if</span> tglbtnState == 0
+    datacursormode <span class="string">off</span>;
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+dcm_obj = datacursormode(handles.figure1);
+struct_info = getCursorInfo(dcm_obj);
+pos = struct_info.Position;
+
+dcmInfo = handles.uidata.dcmInfo;
+locNum = handles.uidata.locationNumber;
+n = length(dcmInfo)/locNum;
+arr = zeros(n,1);
+<span class="keyword">for</span> i = 1:locNum:n
+    img = dicomread(dcmInfo{i});
+    imgToShow = visualProcess(img,handles);
+    arr(i) = imgToShow(pos(1),pos(2));
+<span class="keyword">end</span>
+
+axes(handles.axesStat);
+plot(arr);
+
+<span class="comment">% --- Executes on mouse press over axes background.</span>
+<span class="keyword">function</span> axesImg_ButtonDownFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to axesImg (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+
+<span class="comment">% --- Executes on mouse press over figure background, over a disabled or</span>
+<span class="comment">% --- inactive control, or over an axes background.</span>
+<span class="keyword">function</span> figure1_WindowButtonDownFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to figure1 (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo:1. if it is in drawing state, save the beginning point in curPt1</span>
+
+state = get(handles.tglBtnDrawRoi,<span class="string">'Value'</span>);
+<span class="keyword">if</span> state == 0
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+handles.uidata.isDrawingRoi = 1;
+pos = get(handles.axesImg,<span class="string">'CurrentPoint'</span>);
+handles.uidata.curPt1 = pos(1,1:2);
+handles.uidata.curPt2 = pos(1,1:2);
+guidata(hObject,handles);
+<span class="comment">%loadDcmImages(handles);</span>
+
+<span class="comment">% --- Executes on mouse motion over figure - except title and menu.</span>
+<span class="keyword">function</span> figure1_WindowButtonMotionFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to figure1 (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo:1. if it is in draw ROI state, record the current point in pt2</span>
+<span class="comment">%todo:2. retrieve the Pt1 , drawBoxes{[ymax ymin xmin xmax]} , update uidata.curPt2</span>
+
+state = get(handles.tglBtnDrawRoi,<span class="string">'Value'</span>);
+<span class="keyword">if</span> handles.uidata.isDrawingRoi == 0 || state == 0
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+loadDcmImages(handles);
+pt2 = get(handles.axesImg,<span class="string">'CurrentPoint'</span>);
+pt2 = pt2(1,1:2);
+pt2(pt2&gt;256) = 256;
+
+pt1 = handles.uidata.curPt1;
+drawBoxes(handles.axesImg,[pt2(2) pt1(2) pt1(1) pt2(1)],[0 1 0]);
+handles.uidata.curPt2 = pt2;
+guidata(hObject,handles);
+
+<span class="comment">% --- Executes on mouse press over figure background, over a disabled or</span>
+<span class="comment">% --- inactive control, or over an axes background.</span>
+<span class="keyword">function</span> figure1_WindowButtonUpFcn(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to figure1 (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo:1. get the double index and compute the single index.</span>
+<span class="comment">%todo:2. update roi of curImg with the two points,clear curPts,reset the</span>
+<span class="comment">%        isDrawing state to 0, guidata, reload the images for outbox</span>
+
+state = get(handles.tglBtnDrawRoi,<span class="string">'Value'</span>);
+<span class="keyword">if</span> state ==0 || handles.uidata.isDrawingRoi == 0
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+slice = handles.uidata.curSlice;
+series = handles.uidata.curSeries;
+dcmInd = doubleInd2singleInd(slice,series,handles);
+
+handles.uidata.allRoi(dcmInd,:) = [handles.uidata.curPt2(2) handles.uidata.curPt1(2)<span class="keyword">...</span>
+                handles.uidata.curPt1(1) handles.uidata.curPt2(1)];
+handles.uidata.curPt1 = [];
+handles.uidata.curPt2 = [];
+handles.uidata.isDrawingRoi = 0;
+guidata(hObject,handles);
+loadDcmImages(handles);
+
+<span class="comment">% --- Executes on button press in tglBtnDrawRoi.</span>
+<span class="keyword">function</span> tglBtnDrawRoi_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to tglBtnDrawRoi (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% Hint: get(hObject,'Value') returns toggle state of tglBtnDrawRoi</span>
+</pre><img vspace="5" hspace="5" src="ui_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.6<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+function varargout = ui(varargin)
+% UI M-file for ui.fig
+%      UI, by itself, creates a new UI or raises the existing
+%      singleton*.
+%
+%      H = UI returns the handle to a new UI or the handle to
+%      the existing singleton*.
+%
+%      UI('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in UI.M with the given input arguments.
+%
+%      UI('Property','Value',...) creates a new UI or raises the
+%      existing singleton*.  Starting from the left, property value pairs are
+%      applied to the GUI before ui_OpeningFcn gets called.  An
+%      unrecognized property name or invalid value makes property application
+%      stop.  All inputs are passed to ui_OpeningFcn via varargin.
+%
+%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      instance to run (singleton)".
+%
+% See also: GUIDE, GUIDATA, GUIHANDLES
+
+% Edit the above text to modify the response to help ui
+
+% Last Modified by GUIDE v2.5 09-Dec-2012 19:04:04
+
+% Begin initialization code - DO NOT EDIT
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @ui_OpeningFcn, ...
+                   'gui_OutputFcn',  @ui_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+% End initialization code - DO NOT EDIT
+
+% REPLACE_WITH_DASH_DASH- Executes just before ui is made visible.
+function ui_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% varargin   command line arguments to ui (see VARARGIN)
+
+handles.uidata=[];
+
+handles.uidata=uidata();
+
+handles.uidata.fileAmount = 0;
+handles.uidata.timeNumber = 1;
+handles.uidata.locationNumber = 1;
+handles.uidata.showTimeNumber = 1;
+handles.uidata.showLoctNumber = 1;
+handles.uidata.canvasInitX = 200;
+handles.uidata.canvasInitY = 0;
+handles.uidata.canvasPosInv = 5;
+handles.uidata.figureHeight = 250;
+handles.uidata.figureWidth = 1200;
+handles.uidata.curCanvas = 0;
+handles.uidata.curSeries = 0;
+handles.uidata.curSlice = 0;
+handles.uidata.curSelectedSeries = 0;
+handles.uidata.curSelectedSlice = 0;
+handles.uidata.contrast = 0;
+handles.uidata.luminosity = 0;
+
+handles.uidata.flagGoodQual = [];
+handles.uidata.allRoi = [];
+handles.uidata.curPt1 = [];
+handles.uidata.curPt2 = [];
+handles.uidata.isDrawingRoi = 0;
+% Choose default command line output for ui
+handles.output = hObject;
+set(gcf,'DoubleBuffer','on');
+%import the smiley image into matlab
+%if image is not in the same directory as the GUI files, you must use the
+%full path name of the image file
+tglBtnZoomIn = importdata('icons\tool_zoom_in.png');
+%tglBtnZoomOut = importdata('icons\tool_zoom_out.png');
+tglBtnDataCursor = importdata('icons\tool_data_cursor.png');
+% tglbtnzoom = importdata('tool_zoom_in.png');
+% tglbtnzoom = importdata('tool_zoom_in.png');
+
+%set the smiley image as the button background
+set(handles.tglBtnZoom,'CDATA',im2double(tglBtnZoomIn.cdata));
+%set(handles.tglBtnZoomReset,'CDATA',im2double(tglBtnZoomOut.cdata));
+set(handles.tglBtnDataCursor,'CDATA',im2double(tglBtnDataCursor.cdata));
+
+% Update handles structure
+guidata(hObject, handles);
+
+% UIWAIT makes ui wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+% REPLACE_WITH_DASH_DASH- Outputs from this function are returned to the command line.
+function varargout = ui_OutputFcn(hObject, eventdata, handles) 
+% varargout  cell array for returning output args (see VARARGOUT);
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get default command line output from handles structure
+varargout{1} = handles.output;
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnOpen.
+function btnOpen_Callback(hObject, eventdata, handles)
+% hObject    handle to btnOpen (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Use file open dialog to get a file
+if (~isempty(handles.uidata.pathName))
+    [fname,pname]=uigetfile({'*.dcm','DICOM file'; '*.jpg;*.png', 'Image files'},'Please select a DICOM file.',handles.uidata.pathName);
+else
+    [fname,pname]=uigetfile({'*.dcm','DICOM file'; '*.jpg;*.png', 'Image files'},'Please select a DICOM file.');
+end
+tic
+% Find files with the same extenstion and fill the list box
+if ((fname~=0))
+    handles.uidata.pathName = pname;
+    
+    % Find file extension
+    [pathstr, aa, ext] = fileparts(strcat(pname, fname));
+    if (~isempty(ext))
+        extension=strcat('*', ext);
+    else
+        extension='*';
+    end
+    % Get file list
+    dirFolder=strcat(pname,extension);
+    FileList=dir(dirFolder);
+    Total=length(FileList);
+    n=0;
+    index = 1;
+    for k=1:1:Total
+        if (~isdir(FileList(k).name))
+            n=n+1;
+            filename = {FileList(k).name};
+            fileList(n)= filename;
+            if strcmpi(filename, fname)
+                index = k;
+            end
+        end        
+    end
+    handles.uidata.fileAmount = n;
+    
+    if (n>0)
+        fileList = fileList(1:n);
+        handles.uidata.fileNames = fileList;
+        set(handles.lbFileList,'string',fileList);
+        set(handles.lbFileList,'value', 1);
+        set(handles.txtFileAmount,'string',['File Amount ' num2str(n)]);
+        guidata(hObject, handles);
+    end
+    for i=1:n
+        handles.uidata.dcmInfo{i} = dicominfo([pname fileList{i}]);
+    end
+    handles.uidata.timeNumber = handles.uidata.dcmInfo{1}.NumberOfTemporalPositions;
+    handles.uidata.locationNumber = handles.uidata.dcmInfo{1}.ImagesInAcquisition/...
+        handles.uidata.dcmInfo{1}.NumberOfTemporalPositions;
+    set(handles.edtTimeNumber,'String',num2str(handles.uidata.timeNumber));
+    set(handles.edtLocationNumber,'String',num2str(handles.uidata.locationNumber));
+    
+    tmpImg = dicomread(handles.uidata.dcmInfo{1});
+    maxx = max(max(tmpImg));
+    minn = min(min(tmpImg));
+    set(handles.sldWinCenter,'value',(maxx-minn)/2.0+minn);
+    set(handles.sldWinWidth,'value',maxx-minn); 
+    
+    handles.uidata.fileNamesIJ = cell(handles.uidata.timeNumber,handles.uidata.locationNumber);
+    handles.uidata.fileNameOrderIJ = zeros(handles.uidata.timeNumber,handles.uidata.locationNumber);
+    for i=1:n
+        timeOrder = handles.uidata.dcmInfo{i}.TemporalPositionIdentifier;
+        locaOrder = mod(handles.uidata.dcmInfo{i}.InstanceNumber,handles.uidata.locationNumber);
+        if locaOrder==0
+            locaOrder = 10;
+        end
+        handles.uidata.fileNamesIJ{timeOrder,locaOrder} = handles.uidata.fileNames{i};
+        handles.uidata.fileNameOrderIJ(timeOrder,locaOrder) = i;
+    end
+    
+    handles.uidata.curSeries = 1;
+    handles.uidata.curSlice = 1;
+    handles.uidata.allRoi = zeros(n,4);
+    handles.uidata.flagGoodQual = zeros(handles.uidata.timeNumber,handles.uidata.locationNumber);
+    handles = loadDcmImages(handles);
+    set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
+    set(handles.edtDispNumLoc,'String',num2str(handles.uidata.curSlice));
+    
+    minValue = 1;
+    maxValue = handles.uidata.locationNumber;
+    set(handles.sldSlice,'min',minValue,'max',maxValue);
+    set(handles.sldSlice,'sliderstep',[1/(maxValue-minValue) 1/(maxValue-minValue)]);
+    set(handles.sldSlice,'value',maxValue);
+    set(handles.sldSlice,'visible','on');
+    minValue = 1;
+    maxValue = n/handles.uidata.locationNumber;
+    set(handles.sldSeries,'Min',minValue,'max',maxValue);
+    set(handles.sldSeries,'sliderstep',[1/(maxValue-minValue) 1/(maxValue-minValue)]);
+    set(handles.sldSeries,'value',minValue);
+    set(handles.sldSeries,'visible','on');
+    
+    guidata(hObject,handles);
+end
+toc
+
+% REPLACE_WITH_DASH_DASH- Executes on selection change in lbFileList.
+function lbFileList_Callback(hObject, eventdata, handles)
+% hObject    handle to lbFileList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns lbFileList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from lbFileList
+%todo:1. get the index of selected image
+%todo:2. update the curSeries and curSlice in handles.uidata
+%todo:3. reload the image
+%todo:4. update the text control edtDispNumLoc and edtDispNumTime and the
+%        two sliders and reset tglBtnDrawRoi
+singleIndex = get(hObject,'Value');
+
+[curSlice curSeries] = singleInd2doubleInd(singleIndex,handles);
+if handles.uidata.curSeries == curSeries && handles.uidata.curSlice == curSlice
+    return;
+end
+handles.uidata.curSeries = curSeries;
+handles.uidata.curSlice = curSlice;
+
+handles = loadDcmImages(handles);
+
+set(handles.edtDispNumLoc,'String',num2str(handles.uidata.curSlice));
+set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
+set(handles.sldSeries,'value',curSeries);
+minValue = get(handles.sldSlice,'min');
+maxValue = get(handles.sldSlice,'max');
+set(handles.sldSlice,'value',minValue + maxValue - curSlice);
+set(handles.tglBtnDrawRoi,'Value',0);
+guidata(hObject,handles);
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function lbFileList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to lbFileList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edtTimeNumber_Callback(hObject, eventdata, handles)
+% hObject    handle to edtTimeNumber (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edtTimeNumber as text
+%        str2double(get(hObject,'String')) returns contents of edtTimeNumber as a double
+
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function edtTimeNumber_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edtTimeNumber (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+function edtLocationNumber_Callback(hObject, eventdata, handles)
+% hObject    handle to edtLocationNumber (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edtLocationNumber as text
+%        str2double(get(hObject,'String')) returns contents of edtLocationNumber as a double
+
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function edtLocationNumber_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edtLocationNumber (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnSaveRoiFlags.
+function btnSaveRoiFlags_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSaveRoiFlags (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+pname = handles.uidata.pathName;
+roi = handles.uidata.allRoi;
+flags = handles.uidata.flagGoodQual;
+save([pname 'roiflags.mat'],'roi','flags');
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnSetRoiFlags.
+function btnSetRoiFlags_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSetRoiFlags (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+pname = handles.uidata.pathName;
+if exist([pname 'roiflags.mat'],'file')
+    load([pname 'roiflags.mat']);
+    handles.uidata.allRoi = roi;    
+    handles.uidata.flagGoodQual = flags;  
+    guidata(hObject,handles);
+end
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnSeg.
+function btnSeg_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSeg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnSaveSeg.
+function btnSaveSeg_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSaveSeg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+function [handles]=loadDcmImages(handles)
+%todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi
+%todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively
+%todo:3. process the oriImg according to the window width and window
+%        center,then show it.
+%todo:4. if the image was marked goodqual,draw the yellow box around it.
+%        if the image has ori, draw ori box,update the ckbGoodQual control
+
+curSeries = handles.uidata.curSeries;
+curSlice = handles.uidata.curSlice;
+curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+% luminosity = handles.uidata.luminosity;
+% contrasts = handles.uidata.contrast;
+flagGoodQual = handles.uidata.flagGoodQual(curSeries,curSlice);
+curRoi = handles.uidata.allRoi(curIndex,:);
+
+oriImg = double(dicomread(handles.uidata.dcmInfo{curIndex}));
+maxx=max(max(oriImg));
+minn=min(min(oriImg));
+set(handles.sldWinCenter,'max',maxx); 
+set(handles.sldWinCenter,'min',minn); 
+set(handles.sldWinWidth,'max',maxx-minn); 
+set(handles.sldWinWidth,'min',0);         
+tmpW =  get(handles.sldWinWidth,'Value');
+tmpC = get(handles.sldWinCenter,'Value');
+if (tmpC > maxx)
+    set(handles.sldWinCenter,'value',maxx); 
+else if (tmpC< minn)
+        set(handles.sldWinCenter,'value',minn); 
+    end
+end
+if (tmpW > (maxx-minn))
+    set(handles.sldWinWidth,'value',maxx-minn); 
+end
+
+imgToShow = visualProcess(oriImg,handles);
+imshow(imgToShow,'parent',handles.axesImg);
+
+% pos = get(handles.axesImg,'position');
+tpos(1) = 256; tpos(2) = 1; tpos(3) = 1; tpos(4) = 256;
+tglDrawState = get(handles.tglBtnDrawRoi,'Value');
+if flagGoodQual == 1 && handles.uidata.isDrawingRoi == 0
+    drawBoxes(handles.axesImg,tpos,[1 1 0]);
+end
+if sum(curRoi)>0 && handles.uidata.isDrawingRoi == 0
+    drawBoxes(handles.axesImg,curRoi,[0 1 0]);
+end
+set(handles.ckbGoodQual,'Value',flagGoodQual);
+
+function drawBoxes(h,pos,color)
+axes(h)
+hold on
+plot(h,[pos(3) pos(4) pos(4) pos(3 ) pos(3)],[pos(1) pos(1) pos(2) pos(2) pos(1)],'color',color,'linestyle','-','linewidth',3);
+hold off
+
+function edtDispNumTime_Callback(hObject, eventdata, handles)
+% hObject    handle to edtDispNumTime (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edtDispNumTime as text
+%        str2double(get(hObject,'String')) returns contents of edtDispNumTime as a double
+
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function edtDispNumTime_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edtDispNumTime (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edtDispNumLoc_Callback(hObject, eventdata, handles)
+% hObject    handle to edtDispNumLoc (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edtDispNumLoc as text
+%        str2double(get(hObject,'String')) returns contents of edtDispNumLoc as a double
+
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function edtDispNumLoc_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edtDispNumLoc (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in ckbGoodQual.
+function ckbGoodQual_Callback(hObject, eventdata, handles)
+% hObject    handle to ckbGoodQual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of ckbGoodQual
+%todo:1. get curSlice and curSeries
+%todo:2. update the handles.uidata.flagGoodQual
+%todo:3. if qoodquality ,draw yellow box outside the axesImg
+
+curSlice = handles.uidata.curSlice;
+curSeries = handles.uidata.curSeries;
+
+fgq = get(hObject,'Value');
+handles.uidata.flagGoodQual(curSeries,curSlice) = fgq;
+
+if fgq == 1
+%     pos = get(handles.axesImg,'Position');
+    ymin = 1
+    ymax = 256;
+    xmin = 1;
+    xmax = 256;
+    drawBoxes(handles.axesImg,[ymax ymin xmin xmax],[1 1 0]);
+else
+    loadDcmImages(handles);
+end
+guidata(hObject,handles);
+
+% REPLACE_WITH_DASH_DASH- Executes on slider movement.
+function sldWinWidth_Callback(hObject, eventdata, handles)
+% hObject    handle to sldWinWidth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+%todo: retrieve the window width,update the uidata.contrast ,reload the current Img. 
+handles.uidata.contrast = get(handles.sldWinWidth,'value');
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
+
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function sldWinWidth_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sldWinWidth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on slider movement.
+function sldWinCenter_Callback(hObject, eventdata, handles)
+% hObject    handle to sldWinCenter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+%todo: retrieve the window center,update uidata.luminosity(winCenter) , reload the curImg
+
+handles.uidata.luminosity = get(handles.sldWinCenter,'value');
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
+
+
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function sldWinCenter_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sldWinCenter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on slider movement.
+function sldSlice_Callback(hObject, eventdata, handles)
+% hObject    handle to sldSlice (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of
+%        slider
+%todo:1. get the value of slider
+%todo:2. load the image if curSlice changed
+%todo:3. update the edtDiapNumLoc and lbFileList and reset tglBtnDrawRoi
+
+minValue = get(handles.sldSlice,'min');
+maxValue = get(handles.sldSlice,'max');
+oldSlice = handles.uidata.curSlice;
+handles.uidata.curSlice = minValue + maxValue - floor(get(handles.sldSlice,'Value'));
+
+if handles.uidata.curSlice < 1 || handles.uidata.curSlice > handles.uidata.locationNumber
+    return;
+end
+if oldSlice == handles.uidata.curSlice
+    return;
+end
+handles = loadDcmImages(handles);
+
+set(handles.edtDispNumLoc,'String',num2str(handles.uidata.curSlice));
+set(handles.lbFileList,'value',doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
+set(handles.tglBtnDrawRoi,'Value',0);
+guidata(hObject,handles);
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function sldSlice_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sldSlice (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on slider movement.
+function sldSeries_Callback(hObject, eventdata, handles)
+% hObject    handle to sldSeries (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+%todo:1. get the current value of the slider
+%todo:2. reload the iamge if series changed
+%todo:3. update the text control edtDispNumTime and listbox control
+%        lbFileList,respectively. reset tglBtnDrawRoi
+oldSeries = handles.uidata.curSeries;
+handles.uidata.curSeries = ceil(get(handles.sldSeries,'Value'));
+
+if handles.uidata.curSeries < 1 || handles.uidata.curSeries > handles.uidata.timeNumber
+    return;
+end
+if oldSeries == handles.uidata.curSeries
+    return;
+end
+handles = loadDcmImages(handles);
+
+set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
+set(handles.lbFileList,'Value',doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
+set(handles.tglBtnDrawRoi,'Value',0);
+guidata(hObject,handles);
+
+% REPLACE_WITH_DASH_DASH- Executes during object creation, after setting all properties.
+function sldSeries_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sldSeries (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnTest.
+function btnTest_Callback(hObject, eventdata, handles)
+% hObject    handle to btnTest (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo: just for some tests.
+set(handles.edtDispNumTime,'string','2');
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in tglBtnZoomReset.
+function tglBtnZoomReset_Callback(hObject, eventdata, handles)
+% hObject    handle to tglBtnZoomReset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of tglBtnZoomReset
+%todo:1. get the toggle state
+%todo:2. open or close the zoom function according to the state
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in tglBtnZoom.
+function tglBtnZoom_Callback(hObject, eventdata, handles)
+% hObject    handle to tglBtnZoom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of tglBtnZoom
+%todo: set the zoom state to the value of hObjet.
+tglbtnState = get(hObject,'value');
+if tglbtnState == 1
+    zoom on;
+else
+    zoom off;
+end
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnZoomReset.
+function btnZoomReset_Callback(hObject, eventdata, handles)
+% hObject    handle to btnZoomReset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo: zoom reset.
+% zoom reset;
+% guidata(hObject,handles);
+
+function [slice series] = singleInd2doubleInd(singleIndex,handles)
+%todo:1. get the whole location
+%todo:2. compute the current series and current slice
+
+wholeSlice = handles.uidata.locationNumber;
+
+slice = mod(singleIndex,wholeSlice);
+if slice == 0
+    slice = wholeSlice;
+end
+series = ceil(singleIndex / wholeSlice);
+
+function singleIndex = doubleInd2singleInd(slice,series,handles)
+%todo: get the whole slice,compute the singleIndex
+
+wholeSlice = handles.uidata.locationNumber;
+singleIndex = wholeSlice * (series - 1) + slice;
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in tglBtnDataCursor.
+function tglBtnDataCursor_Callback(hObject, eventdata, handles)
+% hObject    handle to tglBtnDataCursor (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of tglBtnDataCursor
+%todo:1. on or off the datacursormode according to the tgbtn state.
+
+tglbtnState = get(handles.tglBtnDataCursor,'value');
+if tglbtnState == 0
+    datacursormode off;
+    return;
+else
+    datacursormode on;
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnStatInfo.
+function btnStatInfo_Callback(hObject, eventdata, handles)
+% hObject    handle to btnStatInfo (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo:1. if it is in datacursormode,get the position in pixel
+%todo:2. read all the dcm files, and collect all the gray value in arr
+%todo:3. display it in axesStat
+
+tglbtnState = get(handles.tglBtnDataCursor,'value');
+if tglbtnState == 0
+    datacursormode off;
+    return;
+end
+dcm_obj = datacursormode(handles.figure1);
+struct_info = getCursorInfo(dcm_obj);
+pos = struct_info.Position;
+
+dcmInfo = handles.uidata.dcmInfo;
+locNum = handles.uidata.locationNumber;
+n = length(dcmInfo)/locNum;
+arr = zeros(n,1);
+for i = 1:locNum:n
+    img = dicomread(dcmInfo{i});
+    imgToShow = visualProcess(img,handles);
+    arr(i) = imgToShow(pos(1),pos(2));
+end
+
+axes(handles.axesStat);
+plot(arr);
+
+% REPLACE_WITH_DASH_DASH- Executes on mouse press over axes background.
+function axesImg_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to axesImg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% REPLACE_WITH_DASH_DASH- Executes on mouse press over figure background, over a disabled or
+% REPLACE_WITH_DASH_DASH- inactive control, or over an axes background.
+function figure1_WindowButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo:1. if it is in drawing state, save the beginning point in curPt1
+
+state = get(handles.tglBtnDrawRoi,'Value');
+if state == 0
+    return;
+end
+handles.uidata.isDrawingRoi = 1;
+pos = get(handles.axesImg,'CurrentPoint');
+handles.uidata.curPt1 = pos(1,1:2);
+handles.uidata.curPt2 = pos(1,1:2);
+guidata(hObject,handles);
+%loadDcmImages(handles);
+
+% REPLACE_WITH_DASH_DASH- Executes on mouse motion over figure - except title and menu.
+function figure1_WindowButtonMotionFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo:1. if it is in draw ROI state, record the current point in pt2
+%todo:2. retrieve the Pt1 , drawBoxes{[ymax ymin xmin xmax]} , update uidata.curPt2
+
+state = get(handles.tglBtnDrawRoi,'Value');
+if handles.uidata.isDrawingRoi == 0 || state == 0
+    return;
+end
+loadDcmImages(handles);
+pt2 = get(handles.axesImg,'CurrentPoint');
+pt2 = pt2(1,1:2);
+pt2(pt2>256) = 256;
+
+pt1 = handles.uidata.curPt1;
+drawBoxes(handles.axesImg,[pt2(2) pt1(2) pt1(1) pt2(1)],[0 1 0]);
+handles.uidata.curPt2 = pt2;
+guidata(hObject,handles);
+
+% REPLACE_WITH_DASH_DASH- Executes on mouse press over figure background, over a disabled or
+% REPLACE_WITH_DASH_DASH- inactive control, or over an axes background.
+function figure1_WindowButtonUpFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo:1. get the double index and compute the single index.
+%todo:2. update roi of curImg with the two points,clear curPts,reset the
+%        isDrawing state to 0, guidata, reload the images for outbox
+
+state = get(handles.tglBtnDrawRoi,'Value');
+if state ==0 || handles.uidata.isDrawingRoi == 0
+    return;
+end
+slice = handles.uidata.curSlice;
+series = handles.uidata.curSeries;
+dcmInd = doubleInd2singleInd(slice,series,handles);
+
+handles.uidata.allRoi(dcmInd,:) = [handles.uidata.curPt2(2) handles.uidata.curPt1(2)...
+                handles.uidata.curPt1(1) handles.uidata.curPt2(1)];
+handles.uidata.curPt1 = [];
+handles.uidata.curPt2 = [];
+handles.uidata.isDrawingRoi = 0;
+guidata(hObject,handles);
+loadDcmImages(handles);
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in tglBtnDrawRoi.
+function tglBtnDrawRoi_Callback(hObject, eventdata, handles)
+% hObject    handle to tglBtnDrawRoi (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of tglBtnDrawRoi
+
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

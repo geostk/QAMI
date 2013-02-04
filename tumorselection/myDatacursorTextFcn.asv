@@ -1,0 +1,9 @@
+function [ output_args ] = myDatacursorTextFcn( (empt,event_obj )
+%MYDATACURSORTEXTFCN Summary of this function goes here
+%   Detailed explanation goes here
+
+pos = get(event_obj,'Position');
+txt = {['Time: ',num2str(pos(1))],...
+['Amplitude: ',num2str(pos(2))]};
+
+end
