@@ -792,22 +792,36 @@ for i = curSlice:locNum:n
 %     arrEntropy(j) = entropy(double(img));
     j = j + 1;
 end
-% [cc valleys] = lookForExtreme(arrEntropy);
-% [peaks cc] = lookForExtreme(arr);
-% load slice5;
-% goodQuality = find(slice5>8);
-% num1 = 0;
-% num2 = 0;
-% for i = 1:size(goodQuality,1)
-%     if(sum(valleys == goodQuality(i)) == 1)
-%         num1 = num1 + 1;
-%     end
-% end
-% Q1 = num1/size(goodQuality,1);
-%     arr;
+ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
+corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
 
-HighQualitySelection([2 3 4]);
+ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
+indices = HighQualitySelection(dcmInfo{ssimIndex});
 
+%尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
+len = 3;
+theta = 0;
+
+imgRef =  double(dicomread(dcmInfo{955}));
+for i = 1:10
+    filt = fspecial('motion',i,theta);
+    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
+end
+num = length(ssimIndex);
+for p = 1:num
+    img = double(dicomread(dcmInfo{p}));
+    for i = 1:10
+        tmp = corrcoef(imgBlurry(:,:,i),img);
+        similarity(i) = tmp(2);
+    end
+    tmp = find(similarity == max(similarity));
+    blurDegree(p) = tmp(1);
+end
+
+figure(3),plot(blurDegree,'-*'),hold on;
+for i = 1:num
+    text(i,blurDegree(i),num2str(i));
+end
 
 
 
