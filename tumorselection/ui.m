@@ -788,41 +788,67 @@ for i = curSlice:locNum:n
     
     t3 = corrcoef(refImgLocal,imgLocal);
     corrLocal(j) = t3(2);
-%     arr(j) = cmptContr(imgLocal); 
+    contr(j) = cmptContr(img);
 %     arrEntropy(j) = entropy(double(img));
     j = j + 1;
 end
+
 ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
 corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
 
-ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
+contr = contr/max(contr); %normalization
+ssimLocal = ssimLocal/max(ssimLocal);%normalizationi
+startInd = find(contr == max(contr));%when contrast agent starts work,record the startInd 
+endInd = length(contr);
+polyfun = polyfit(startInd:endInd,contr(startInd:end),3);%fit the curve of contrast when the contrast agent(CA) is injected
+polyfunder = polyder(polyfun);%derivative of the curve of contrast
+polyfunderval = polyval(polyfunder,startInd:endInd);
+polyfunderval = abs(polyfunderval);
+midInd = find(polyfunderval == min(polyfunderval));%look for the point whose derivate is nearst to 0 (对比度曲线平滑处)
+midInd = midInd + round(length(contr)/20);%determinate the point when the effect of CA is over.
+
+sMax = ssimMax(find(ssimMax>=startInd));
+sMax = sMax(find(sMax<=midInd));%during the period when CA is in effect,determine the good images
+
+%after the effect of CA,select a small number images from the rest with the
+%ration of 1/5
+tmpInd = ssimMax(find(ssimMax > midInd));
+tmpval = sort(ssimLocal(tmpInd),'descend');
+tmpval = tmpval(1:floor(length(tmpval)/5));
+n = length(tmpval);
+for i = 1:n
+    sMax = [sMax find(ssimLocal ==tmpval(i))];
+end
+
+sMax = sort(sMax);
+ssimIndex = doubleInd2singleInd(curSlice,sMax,handles);
 indices = HighQualitySelection(dcmInfo{ssimIndex});
 
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
-theta = 0;
-imgRef =  double(dicomread(dcmInfo{955}));
-for i = 1:10
-    %filt = fspecial('motion',i*1.9,theta);
-    filt = fspecial('gaussian',[i i],i*0.2);
-    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
-end
-num = length(ssimIndex);
-for p = 1:num
-    img = double(dicomread(dcmInfo{p}));
-    for i = 1:10
-        tmp = corrcoef(imgBlurry(:,:,i),img);
-        similarity(i) = tmp(2);
-    end
-    tmp = find(similarity == max(similarity));
-    blurDegree(p) = tmp(1);
-end
-figure(3),plot(blurDegree,'-*'),hold on;
-for i = 1:num
-    text(i,blurDegree(i),num2str(i));
-end
-for i = 1:10
-    figure,imshow(imgBlurry(:,:,i),[]);
-end
+% theta = 0;
+% imgRef =  double(dicomread(dcmInfo{955}));
+% for i = 1:10
+%     %filt = fspecial('motion',i*1.9,theta);
+%     filt = fspecial('gaussian',[i i],i*0.2);
+%     imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
+% end
+% num = length(ssimIndex);
+% for p = 1:num
+%     img = double(dicomread(dcmInfo{p}));
+%     for i = 1:10
+%         tmp = corrcoef(imgBlurry(:,:,i),img);
+%         similarity(i) = tmp(2);
+%     end
+%     tmp = find(similarity == max(similarity));
+%     blurDegree(p) = tmp(1);
+% end
+% figure(3),plot(blurDegree,'-*'),hold on;
+% for i = 1:num
+%     text(i,blurDegree(i),num2str(i));
+% end
+% for i = 1:10
+%     figure,imshow(imgBlurry(:,:,i),[]);
+% end
 
 
     

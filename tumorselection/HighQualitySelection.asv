@@ -70,7 +70,7 @@ if isSuccess == 0
 end
 
 min = 1;
-max = n - 1;
+max = n;
 set(handles.sldBrowse,'Min',min);
 set(handles.sldBrowse,'Max',max);
 set(handles.sldBrowse,'sliderstep',[2/(max-min) 2/(max-min)]);
@@ -100,6 +100,7 @@ function btnLeft_Callback(hObject, eventdata, handles)
 %todo:1. set the new curIndex
 %todo:2. show the images
 %todo:3. if failed, reset the curIndex;
+%todo:4. update the slider
 
 handles.curIndex = handles.curIndex - 2;
 
@@ -108,6 +109,8 @@ isSuccess = loadDcmImages(handles);
 if isSuccess == 0
     handles.curIndex = handles.curIndex + 2;
 end
+
+set(handles.sldBrowse,'value',handles.curIndex);
 guidata(hObject,handles);
 
 % --- Executes on button press in btnRight.
@@ -118,6 +121,7 @@ function btnRight_Callback(hObject, eventdata, handles)
 %todo:1. set the new curIndex
 %todo:2. show the images
 %todo:3. if failed, reset the curIndex;
+%todo:4. update the slider
 
 handles.curIndex = handles.curIndex + 2;
 
@@ -126,6 +130,8 @@ isSuccess = loadDcmImages(handles);
 if isSuccess == 0
     handles.curIndex = handles.curIndex - 2;
 end
+
+set(handles.sldBrowse,'value',handles.curIndex);
 guidata(hObject,handles);
 
 % --- Executes on slider movement.
@@ -138,10 +144,14 @@ function sldBrowse_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 %todo:1. get the value
 %todo:2. set the curIndex
+%todo:3. reload the images
 
 sldValue = get(hObject,'Value');
 
 handles.curIndex = round(sldValue);
+
+isSuccess = loadDcmImages(handles);
+guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function sldBrowse_CreateFcn(hObject, eventdata, handles)
@@ -202,7 +212,7 @@ end
 imshow(imgLeft,[],'parent',handles.axesLeft);
 imshow(imgRight,[],'parent',handles.axesRight);
 
-set(handles.txtLeft,'string',['Piece ' num2str(index1)]);
+set(handles.txtLeft,'string',['Piece ' num2str(index1) '/' num2str(n) ]);
 if(index2 == 0)
     set(handles.txtRight,'string','');
 else

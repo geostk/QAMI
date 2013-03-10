@@ -212,7 +212,7 @@ end
 imshow(imgLeft,[],'parent',handles.axesLeft);
 imshow(imgRight,[],'parent',handles.axesRight);
 
-set(handles.txtLeft,'string',['Piece ' num2str(index1)]);
+set(handles.txtLeft,'string',['Piece ' num2str(index1) '/' num2str(n) ]);
 if(index2 == 0)
     set(handles.txtRight,'string','');
 else
