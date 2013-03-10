@@ -1,0 +1,7 @@
+function [ output_args ] = disp( array )
+%DISP Summary of this function goes here
+%   Detailed explanation goes here
+
+%todo:1. plot the array
+
+end
