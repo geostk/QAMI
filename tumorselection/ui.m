@@ -811,7 +811,7 @@ sMax = ssimMax(find(ssimMax>=startInd));
 sMax = sMax(find(sMax<=midInd));%during the period when CA is in effect,determine the good images
 
 %after the effect of CA,select a small number images from the rest with the
-%ration of 1/5
+%ratio of 1/5
 tmpInd = ssimMax(find(ssimMax > midInd));
 tmpval = sort(ssimLocal(tmpInd),'descend');
 tmpval = tmpval(1:floor(length(tmpval)/5));
@@ -822,7 +822,7 @@ end
 
 sMax = sort(sMax);
 ssimIndex = doubleInd2singleInd(curSlice,sMax,handles);
-indices = HighQualitySelection(dcmInfo{ssimIndex});
+indices = HighQualitySelection(dcmInfo{ssimIndex},sMax,length(dcmInfo)/locNum);
 
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
 % theta = 0;

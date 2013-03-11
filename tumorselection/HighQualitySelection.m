@@ -22,7 +22,7 @@ function varargout = HighQualitySelection(varargin)
 
 % Edit the above text to modify the response to help HighQualitySelection
 
-% Last Modified by GUIDE v2.5 03-Feb-2013 15:00:33
+% Last Modified by GUIDE v2.5 05-Feb-2013 14:14:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,8 +58,11 @@ function HighQualitySelection_OpeningFcn(hObject, eventdata, handles, varargin)
 %todo:3. initialize the slider
 
 handles.output = hObject;
-handles.dcmInfo = varargin;
+handles.dcmInfo = varargin(1:end-2);
+handles.sMax = varargin(end-1);
+handles.seriesNum = varargin(end);
 n = length(handles.dcmInfo);
+handles.goodQuality = zeros(1,n);
 handles.curIndex = 1;
 guidata(hObject,handles);
 
@@ -75,10 +78,6 @@ set(handles.sldBrowse,'Min',min);
 set(handles.sldBrowse,'Max',max);
 set(handles.sldBrowse,'sliderstep',[2/(max-min) 2/(max-min)]);
 set(handles.sldBrowse,'value',1);
-
-
-% UIWAIT makes HighQualitySelection wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -101,6 +100,7 @@ function btnLeft_Callback(hObject, eventdata, handles)
 %todo:2. show the images
 %todo:3. if failed, reset the curIndex;
 %todo:4. update the slider
+%todo:5. update the state of ckbLeft and ckbRight
 
 handles.curIndex = handles.curIndex - 2;
 
@@ -111,6 +111,12 @@ if isSuccess == 0
 end
 
 set(handles.sldBrowse,'value',handles.curIndex);
+% 
+% if handles.curIndex +1 <= length(handles.dcmInfo)
+%     set(handles.ckbRight,'Visible','on');
+%     set(handles.ckbLeft,'Value',handles.goodQuality(handles.curIndex));
+%     set(handles.ckbRight,'Value',handles.goodQuality(handles.curIndex + 1));
+% end
 guidata(hObject,handles);
 
 % --- Executes on button press in btnRight.
@@ -122,6 +128,7 @@ function btnRight_Callback(hObject, eventdata, handles)
 %todo:2. show the images
 %todo:3. if failed, reset the curIndex;
 %todo:4. update the slider
+%todo:5. update the state of ckbLeft and ckbRight
 
 handles.curIndex = handles.curIndex + 2;
 
@@ -132,6 +139,15 @@ if isSuccess == 0
 end
 
 set(handles.sldBrowse,'value',handles.curIndex);
+% 
+% if handles.curIndex + 1 <= length(handles.dcmInfo)
+%     set(handles.ckbRight,'Visible','on');
+%     set(handles.ckbLeft,'Value',handles.goodQuality(handles.curIndex));
+%     set(handles.ckbRight,'Value',handles.goodQuality(handles.curIndex + 1));    
+% else
+%     set(handles.ckbRight,'Visible','off');
+%     set(handles.ckbLeft,'Value',handles.goodQuality(handles.curIndex));
+% end
 guidata(hObject,handles);
 
 % --- Executes on slider movement.
@@ -172,7 +188,14 @@ function ckbLeft_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of ckbLeft
+%todo:1. get the curIndex, get the toggle state of ckbLeft;
+%todo:2. set the goodQuality
 
+curIndex = handles.curIndex;
+isGood = get(hObject,'Value');
+
+handles.goodQuality(curIndex) = isGood;
+guidata(hObject,handles);
 
 % --- Executes on button press in ckbRight.
 function ckbRight_Callback(hObject, eventdata, handles)
@@ -181,15 +204,30 @@ function ckbRight_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of ckbRight
+%todo:1. get the curIndex, get the toggle state of ckbLeft;
+%todo:2. set the goodQuality
+
+curIndex = handles.curIndex + 1;
+isGood = get(hObject,'Value');
+n = length(handles.dcmInfo);
+
+if curIndex > n
+    return;
+end
+handles.goodQuality(curIndex) = isGood;
+guidata(hObject,handles);
 
 function [isSuccess] = loadDcmImages(handles)
 %todo:1. get the dcmInfo, curIndex, etc.
 %todo:2. test the validity
 %todo:3. show the image(s)
 %todo:4. update the text label above the images
+%todo:5. update the state of ckbLeft and ckbRight
 
 dcmInfo = handles.dcmInfo;
 curIndex = handles.curIndex;
+sMax = handles.sMax;
+seriesNum = handles.seriesNum;
 index1 = curIndex;
 index2 = index1 + 1;
 n = length(dcmInfo);
@@ -212,9 +250,26 @@ end
 imshow(imgLeft,[],'parent',handles.axesLeft);
 imshow(imgRight,[],'parent',handles.axesRight);
 
-set(handles.txtLeft,'string',['Piece ' num2str(index1) '/' num2str(n) ]);
+set(handles.txtLeft,'string',['Piece ' num2str(index1) '/' num2str(n) '  ' num2str(sMax{1}(index1)) '/' num2str(seriesNum{1})]);
 if(index2 == 0)
     set(handles.txtRight,'string','');
 else
-    set(handles.txtRight,'string',['Piece ' num2str(index2) '/' num2str(n)]);
+    set(handles.txtRight,'string',['Piece ' num2str(index2) '/' num2str(n) '  ' num2str(sMax{1}(index2)) '/' num2str(seriesNum{1})]);
 end
+
+set(handles.ckbLeft,'Value',handles.goodQuality(index1));
+if index2 == 0
+    set(handles.ckbRight,'Visible','off');
+else
+    set(handles.ckbRight,'Visible','on');
+    set(handles.ckbRight,'Value',handles.goodQuality(index2));
+end
+
+
+% --- Executes during object deletion, before destroying properties.
+function figure1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+goodQuality = handles.goodQuality;
+save('goodQualityIndex','goodQuality');
