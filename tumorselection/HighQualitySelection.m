@@ -216,5 +216,5 @@ set(handles.txtLeft,'string',['Piece ' num2str(index1) '/' num2str(n) ]);
 if(index2 == 0)
     set(handles.txtRight,'string','');
 else
-    set(handles.txtRight,'string',['Piece ' num2str(index2)]);
+    set(handles.txtRight,'string',['Piece ' num2str(index2) '/' num2str(n)]);
 end
