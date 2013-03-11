@@ -824,6 +824,19 @@ sMax = sort(sMax);
 ssimIndex = doubleInd2singleInd(curSlice,sMax,handles);
 indices = HighQualitySelection(dcmInfo{ssimIndex},sMax,length(dcmInfo)/locNum);
 
+a=10;
+for i = 1:length(sMax)
+    img = double(dicomread(dcmInfo{ssimIndex(i)}));
+    entr(i) = entropy(img);
+    bw1 = edge(img,'sobel');
+    bw2 = edge(img,'canny');
+    bw3 = edge(img,'log');
+    figure,subplot(2,2,1),imshow(img,[]),subplot(2,2,2),imshow(bw1),subplot(2,2,3),imshow(bw2),subplot(2,2,4),imshow(bw3);
+end
+figure;plot(entr,'r-o');
+for i = 1:length(sMax)
+    text(i,entr(i),num2str(i));
+end
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
 % theta = 0;
 % imgRef =  double(dicomread(dcmInfo{955}));
@@ -834,7 +847,7 @@ indices = HighQualitySelection(dcmInfo{ssimIndex},sMax,length(dcmInfo)/locNum);
 % end
 % num = length(ssimIndex);
 % for p = 1:num
-%     img = double(dicomread(dcmInfo{p}));
+%     img = double(dicomread(dcmInfo{ssimIndex(p)}));
 %     for i = 1:10
 %         tmp = corrcoef(imgBlurry(:,:,i),img);
 %         similarity(i) = tmp(2);
@@ -842,7 +855,7 @@ indices = HighQualitySelection(dcmInfo{ssimIndex},sMax,length(dcmInfo)/locNum);
 %     tmp = find(similarity == max(similarity));
 %     blurDegree(p) = tmp(1);
 % end
-% figure(3),plot(blurDegree,'-*'),hold on;
+% figure,plot(blurDegree,'-*'),hold on;
 % for i = 1:num
 %     text(i,blurDegree(i),num2str(i));
 % end
