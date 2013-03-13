@@ -796,37 +796,10 @@ end
 ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
 corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
 
-contr = contr/max(contr); %normalization
-ssimLocal = ssimLocal/max(ssimLocal);%normalizationi
-startInd = find(contr == max(contr));%when contrast agent starts work,record the startInd 
-endInd = length(contr);
-polyfun = polyfit(startInd:endInd,contr(startInd:end),3);%fit the curve of contrast when the contrast agent(CA) is injected
-polyfunder = polyder(polyfun);%derivative of the curve of contrast
-polyfunderval = polyval(polyfunder,startInd:endInd);
-polyfunderval = abs(polyfunderval);
-midInd = find(polyfunderval == min(polyfunderval));%look for the point whose derivate is nearst to 0 (对比度曲线平滑处)
-midInd = midInd + round(length(contr)/20);%determinate the point when the effect of CA is over.
-
-sMax = ssimMax(find(ssimMax>=startInd));
-sMax = sMax(find(sMax<=midInd));%during the period when CA is in effect,determine the good images
-
-%after the effect of CA,select a small number images from the rest with the
-%ratio of 1/5
-tmpInd = ssimMax(find(ssimMax > midInd));
-tmpval = sort(ssimLocal(tmpInd),'descend');
-tmpval = tmpval(1:floor(length(tmpval)/5));
-n = length(tmpval);
-for i = 1:n
-    sMax = [sMax find(ssimLocal ==tmpval(i))];
-end
-
-sMax = sort(sMax);
-ssimIndex = doubleInd2singleInd(curSlice,sMax,handles);
-indices = HighQualitySelection(dcmInfo{ssimIndex},sMax,length(dcmInfo)/locNum);
-
+ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
-theta = 0;
-imgRef =  double(dicomread(dcmInfo{955}));
+%todo:*********************************************************************
+imgRef =  double(dicomread(dcmInfo{curIndex}));
 for i = 1:10
     %filt = fspecial('motion',i*1.9,theta);
     filt = fspecial('gaussian',3,i*0.095);
@@ -842,14 +815,11 @@ for p = 1:num
     tmp = find(similarity == max(similarity));
     blurDegree(p) = tmp(1);
 end
-figure,plot(blurDegree,'-*'),hold on;
-for i = 1:num
-    text(i,blurDegree(i),num2str(i));
-end
-for i = 1:10
-    figure,imshow(imgBlurry(:,:,i),[]);
-end
-
+tmp = blurDegree;
+tmp(tmp==min(tmp)) = [];
+t = min(tmp);
+ssimIndex = ssimIndex(blurDegree <= t);
+indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,length(dcmInfo)/locNum);
 
     
 
