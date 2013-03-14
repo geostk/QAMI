@@ -828,10 +828,10 @@ a=10;
 for i = 1:length(sMax)
     img = double(dicomread(dcmInfo{ssimIndex(i)}));
     %entr(i) = entropy(img);
-    bw1 = edge(img,'sobel');
+    bw1 = edge(img,'sobel',80);
     bw2 = edge(img,'canny');
     bw3 = edge(img,'log');
-    he(i) = sum(bw2(:));
+    he(i) = sum(bw1(:));
     %figure,subplot(2,2,1),imshow(img,[]),subplot(2,2,2),imshow(bw1),subplot(2,2,3),imshow(bw2),subplot(2,2,4),imshow(bw3);
 end
 figure;plot(he,'r-o');

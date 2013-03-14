@@ -1,0 +1,24 @@
+function [ output_args ] = cmpLength( img,n )
+%CMPPERIM Summary of this function goes here
+%   Detailed explanation goes here
+
+[m n] = size(img);
+flag = 1;
+for i=1:m
+    if flag== 0
+        break;
+    end
+    for j = 1:n
+        if(img(i,j) == n)
+            flag=0;
+            break;
+        end
+    end
+end
+i = i-1;
+for p = -1:1
+    for q = -1:1
+        if(img(i+p,j+q) == n)
+            detect(img,i+p,j+q)
+            
+end
