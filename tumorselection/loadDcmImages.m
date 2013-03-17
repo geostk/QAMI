@@ -1,5 +1,5 @@
 
-function [handles]=loadDcmImages(hObject,handles)
+function [handles]=loadDcmImages(handles)
 %todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi
 %todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively
 %todo:3. process the oriImg according to the window width and window
@@ -78,14 +78,14 @@ if sum(curRoi)>0 && handles.uidata.isDrawingRoi == 0
 end
 set(handles.ckbGoodQual,'Value',flagGoodQual);
 
-set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
-set(handles.lbFileList,'Value',doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
-set(handles.tglBtnDrawRoi,'Value',0);
-
-set(handles.sldSeries,'value',curSeries);
-minValue = get(handles.sldSlice,'min');
-maxValue = get(handles.sldSlice,'max');
-set(handles.sldSlice,'value',minValue + maxValue - curSlice);
-
-guidata(hObject,handles);
+% set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
+% set(handles.lbFileList,'Value',doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
+% set(handles.tglBtnDrawRoi,'Value',0);
+% 
+% set(handles.sldSeries,'value',curSeries);
+% minValue = get(handles.sldSlice,'min');
+% maxValue = get(handles.sldSlice,'max');
+% set(handles.sldSlice,'value',minValue + maxValue - curSlice);
+% 
+% guidata(hObject,handles);
 

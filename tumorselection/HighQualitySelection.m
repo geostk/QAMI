@@ -278,15 +278,29 @@ function figure1_DeleteFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 goodQuality = handles.goodQuality;
-save('goodQualityIndex','goodQuality');
+sMax = handles.sMax;
 mainHandle = handles.mainHandle;
 mainHandle = mainHandle{1};
+%=============================================
+hObject = mainHandle.btnStatInfo;
+%=============================================
 flagGoodQual = mainHandle.uidata.flagGoodQual;
 flagGoodQual = zeros(size(flagGoodQual));
-sMax = handles.sMax;
+
 curSeries = sMax{1}(logical(goodQuality));
 flagGoodQual(curSeries,mainHandle.uidata.curSlice) = 1;
 mainHandle.uidata.flagGoodQual =  flagGoodQual;
 mainHandle.uidata.curSeries = curSeries(1);
 guidata(hObject,mainHandle);
-loadDcmImages(mainHandle.btnStatInfo,mainHandle);
+
+loadDcmImages(mainHandle);
+
+curSlice = mainHandle.uidata.curSlice;
+set(mainHandle.edtDispNumTime,'String',num2str(curSeries));
+set(mainHandle.lbFileList,'Value',doubleInd2singleInd(curSlice,curSeries,mainHandle));
+set(mainHandle.tglBtnDrawRoi,'Value',0);
+set(mainHandle.sldSeries,'value',curSeries);
+minValue = get(mainHandle.sldSlice,'min');
+maxValue = get(mainHandle.sldSlice,'max');
+set(mainHandle.sldSlice,'value',minValue + maxValue - curSlice);
+guidata(hObject,mainHandle);
