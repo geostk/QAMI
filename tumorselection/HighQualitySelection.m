@@ -58,15 +58,17 @@ function HighQualitySelection_OpeningFcn(hObject, eventdata, handles, varargin)
 %todo:3. initialize the slider
 
 handles.output = hObject;
-handles.dcmInfo = varargin(1:end-2);
-handles.sMax = varargin(end-1);
-handles.seriesNum = varargin(end);
+handles.dcmInfo = varargin(1:end-4);
+handles.sMax = varargin(end-3);
+handles.scores = varargin(end-2);
+handles.seriesNum = varargin(end-1);
+handles.mainHandle = varargin(end);
 n = length(handles.dcmInfo);
 handles.goodQuality = zeros(1,n);
 handles.curIndex = 1;
 guidata(hObject,handles);
 
-isSuccess = loadDcmImages(handles);
+isSuccess = loadDcms(handles);
 if isSuccess == 0
     close gcf;
     return;
@@ -104,7 +106,7 @@ function btnLeft_Callback(hObject, eventdata, handles)
 
 handles.curIndex = handles.curIndex - 2;
 
-isSuccess = loadDcmImages(handles);
+isSuccess = loadDcms(handles);
 
 if isSuccess == 0
     handles.curIndex = handles.curIndex + 2;
@@ -132,7 +134,7 @@ function btnRight_Callback(hObject, eventdata, handles)
 
 handles.curIndex = handles.curIndex + 2;
 
-isSuccess = loadDcmImages(handles);
+isSuccess = loadDcms(handles);
 
 if isSuccess == 0
     handles.curIndex = handles.curIndex - 2;
@@ -166,7 +168,7 @@ sldValue = get(hObject,'Value');
 
 handles.curIndex = round(sldValue);
 
-isSuccess = loadDcmImages(handles);
+isSuccess = loadDcms(handles);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -217,16 +219,17 @@ end
 handles.goodQuality(curIndex) = isGood;
 guidata(hObject,handles);
 
-function [isSuccess] = loadDcmImages(handles)
+function [isSuccess] = loadDcms(handles)
 %todo:1. get the dcmInfo, curIndex, etc.
 %todo:2. test the validity
 %todo:3. show the image(s)
-%todo:4. update the text label above the images
+%todo:4. update the text label above and below the images
 %todo:5. update the state of ckbLeft and ckbRight
 
 dcmInfo = handles.dcmInfo;
 curIndex = handles.curIndex;
 sMax = handles.sMax;
+scores = handles.scores;
 seriesNum = handles.seriesNum;
 index1 = curIndex;
 index2 = index1 + 1;
@@ -251,10 +254,13 @@ imshow(imgLeft,[],'parent',handles.axesLeft);
 imshow(imgRight,[],'parent',handles.axesRight);
 
 set(handles.txtLeft,'string',['Piece ' num2str(index1) '/' num2str(n) '  ' num2str(sMax{1}(index1)) '/' num2str(seriesNum{1})]);
+set(handles.txtScoreLeft,'string',sprintf('%.2f',scores{1}(index1)));
 if(index2 == 0)
     set(handles.txtRight,'string','');
+    set(handles.txtScoreRight,'string','');
 else
     set(handles.txtRight,'string',['Piece ' num2str(index2) '/' num2str(n) '  ' num2str(sMax{1}(index2)) '/' num2str(seriesNum{1})]);
+    set(handles.txtScoreRight,'string',sprintf('%.2f',scores{1}(index2)));
 end
 
 set(handles.ckbLeft,'Value',handles.goodQuality(index1));
@@ -273,3 +279,14 @@ function figure1_DeleteFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 goodQuality = handles.goodQuality;
 save('goodQualityIndex','goodQuality');
+mainHandle = handles.mainHandle;
+mainHandle = mainHandle{1};
+flagGoodQual = mainHandle.uidata.flagGoodQual;
+flagGoodQual = zeros(size(flagGoodQual));
+sMax = handles.sMax;
+curSeries = sMax{1}(logical(goodQuality));
+flagGoodQual(curSeries,mainHandle.uidata.curSlice) = 1;
+mainHandle.uidata.flagGoodQual =  flagGoodQual;
+mainHandle.uidata.curSeries = curSeries(1);
+guidata(hObject,mainHandle);
+loadDcmImages(mainHandle.btnStatInfo,mainHandle);

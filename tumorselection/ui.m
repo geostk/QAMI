@@ -798,7 +798,6 @@ corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
 
 ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
-%todo:*********************************************************************
 imgRef =  double(dicomread(dcmInfo{curIndex}));
 for i = 1:10
     %filt = fspecial('motion',i*1.9,theta);
@@ -819,7 +818,19 @@ tmp = blurDegree;
 tmp(tmp==min(tmp)) = [];
 t = min(tmp);
 ssimIndex = ssimIndex(blurDegree <= t);
-indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,length(dcmInfo)/locNum);
+ssimMax = ssimMax(blurDegree <= t);
+%====================================
+for i=1:length(ssimIndex)
+    img = double(dicomread(dcmInfo{ssimIndex(i)}));
+    tmp = corrcoef(imgBlurry(:,:,1),img);
+    scores(i) = tmp(2);
+end
+scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
+%scores = vpa(scores,3);
+%====================================
+%compute the similarity again for the images in ssimMax
+%4 arguments:single index, series numbers, scores for them, num of images in current location.
+indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
 
     
 

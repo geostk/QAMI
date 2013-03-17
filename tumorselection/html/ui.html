@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>ui</title>
       <meta name="generator" content="MATLAB 7.6">
-      <meta name="date" content="2012-12-15">
+      <meta name="date" content="2013-03-16">
       <meta name="m-file" content="ui"><style>
 
 body {
@@ -94,7 +94,7 @@ p.footer {
 
 <span class="comment">% Edit the above text to modify the response to help ui</span>
 
-<span class="comment">% Last Modified by GUIDE v2.5 09-Dec-2012 19:04:04</span>
+<span class="comment">% Last Modified by GUIDE v2.5 19-Dec-2012 17:42:54</span>
 
 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
 gui_Singleton = 1;
@@ -140,6 +140,8 @@ handles.uidata.figureWidth = 1200;
 handles.uidata.curCanvas = 0;
 handles.uidata.curSeries = 0;
 handles.uidata.curSlice = 0;
+handles.uidata.curSegSlice = 0;
+handles.uidata.curSliceRoi = 0;
 handles.uidata.curSelectedSeries = 0;
 handles.uidata.curSelectedSlice = 0;
 handles.uidata.contrast = 0;
@@ -166,7 +168,9 @@ tglBtnDataCursor = importdata(<span class="string">'icons\tool_data_cursor.png'<
 set(handles.tglBtnZoom,<span class="string">'CDATA'</span>,im2double(tglBtnZoomIn.cdata));
 <span class="comment">%set(handles.tglBtnZoomReset,'CDATA',im2double(tglBtnZoomOut.cdata));</span>
 set(handles.tglBtnDataCursor,<span class="string">'CDATA'</span>,im2double(tglBtnDataCursor.cdata));
-
+<span class="comment">%hide the xticklabel and xytick.</span>
+set(handles.axesImg,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'XTickLabel'</span>,<span class="string">''</span>,<span class="string">'XTickLabel'</span>,<span class="string">''</span>,<span class="string">'XTick'</span>,[],<span class="string">'YTick'</span>,[]);
+addpath(genpath(pwd));
 <span class="comment">% Update handles structure</span>
 guidata(hObject, handles);
 
@@ -280,6 +284,10 @@ tic
     set(handles.sldSeries,<span class="string">'sliderstep'</span>,[1/(maxValue-minValue) 1/(maxValue-minValue)]);
     set(handles.sldSeries,<span class="string">'value'</span>,minValue);
     set(handles.sldSeries,<span class="string">'visible'</span>,<span class="string">'on'</span>);
+<span class="comment">%     %set the position of axes</span>
+<span class="comment">%     set(handles.axesImg,'Position',[0.13 0.4 0.4 0.59]);</span>
+<span class="comment">%     set(handles.axesStat,'Position',[0.57 0.4 0.4 0.59]);</span>
+
 
     guidata(hObject,handles);
 <span class="keyword">end</span>
@@ -409,7 +417,24 @@ guidata(hObject,handles);
 <span class="comment">% hObject    handle to btnSeg (see GCBO)</span>
 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo:1. if there's roi in curimg,return</span>
+<span class="comment">%todo:2. update handles.uidata.curSegSlice ,handles.uidata.curSliceRoi,set</span>
+<span class="comment">%        the state of</span>
 
+curSeries = handles.uidata.curSeries;
+curSlice = handles.uidata.curSlice;
+curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+curRoi = floor(handles.uidata.allRoi(curIndex,:));
+<span class="keyword">if</span> ~(curRoi(1) &gt;= 0 &amp;&amp; curRoi(2) &gt; 0 &amp;&amp; curRoi(3) &gt; 0 &amp;&amp; curRoi(4) &gt; 0 &amp;&amp; abs(curRoi(1) - curRoi(2))&gt;0.<span class="keyword">...</span>
+    &amp;&amp; abs(curRoi(3) - curRoi(4)) &gt; 0)
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+
+handles.uidata.curSegSlice = curSlice;
+handles.uidata.curSliceRoi = curRoi;
+set(handles.tglBtnSegShow,<span class="string">'Value'</span>,1);
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
 
 <span class="comment">% --- Executes on button press in btnSaveSeg.</span>
 <span class="keyword">function</span> btnSaveSeg_Callback(hObject, eventdata, handles)
@@ -421,17 +446,22 @@ guidata(hObject,handles);
 <span class="comment">%todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi</span>
 <span class="comment">%todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively</span>
 <span class="comment">%todo:3. process the oriImg according to the window width and window</span>
-<span class="comment">%        center,then show it.</span>
+<span class="comment">%        center.if the image needs segment and the state of tglBtnSegShow is on</span>
+<span class="comment">%        ,call ostu to get the threshold,select the object and set it to</span>
+<span class="comment">%        max value,then show it.</span>
 <span class="comment">%todo:4. if the image was marked goodqual,draw the yellow box around it.</span>
-<span class="comment">%        if the image has ori, draw ori box,update the ckbGoodQual control</span>
+<span class="comment">%        if the image has ori, draw ori box,update the ckbGoodQual</span>
+<span class="comment">%        control,then display the histogram of the ori</span>
 
 curSeries = handles.uidata.curSeries;
 curSlice = handles.uidata.curSlice;
 curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+curSegSlice = handles.uidata.curSegSlice;
 <span class="comment">% luminosity = handles.uidata.luminosity;</span>
 <span class="comment">% contrasts = handles.uidata.contrast;</span>
 flagGoodQual = handles.uidata.flagGoodQual(curSeries,curSlice);
-curRoi = handles.uidata.allRoi(curIndex,:);
+curRoi = floor(handles.uidata.allRoi(curIndex,:));
+curSliceRoi = floor(handles.uidata.curSliceRoi);
 
 oriImg = double(dicomread(handles.uidata.dcmInfo{curIndex}));
 maxx=max(max(oriImg));
@@ -453,6 +483,18 @@ tmpC = get(handles.sldWinCenter,<span class="string">'Value'</span>);
 <span class="keyword">end</span>
 
 imgToShow = visualProcess(oriImg,handles);
+tglBtnSegShowState = get(handles.tglBtnSegShow,<span class="string">'Value'</span>);
+<span class="keyword">if</span> curSlice == curSegSlice &amp;&amp; tglBtnSegShowState == 1
+    thresholdValue = ostu(imgToShow);
+    roiRegion = imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4));
+    roiRegion(roiRegion &gt; thresholdValue) = 256;
+    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4)) = roiRegion;
+    imgToShow(:,:,1) = imgToShow(:,:,1);
+    imgToShow(:,:,2) = imgToShow(:,:,1);
+    imgToShow(:,:,3) = imgToShow(:,:,1);
+    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4),2) = 0;
+    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4),3) = 0;
+<span class="keyword">end</span>
 imshow(imgToShow,<span class="string">'parent'</span>,handles.axesImg);
 
 <span class="comment">% pos = get(handles.axesImg,'position');</span>
@@ -463,6 +505,19 @@ tglDrawState = get(handles.tglBtnDrawRoi,<span class="string">'Value'</span>);
 <span class="keyword">end</span>
 <span class="keyword">if</span> sum(curRoi)&gt;0 &amp;&amp; handles.uidata.isDrawingRoi == 0
     drawBoxes(handles.axesImg,curRoi,[0 1 0]);
+    <span class="keyword">if</span> curRoi(1) &gt;= 0 &amp;&amp; curRoi(2) &gt; 0 &amp;&amp; curRoi(3) &gt; 0 &amp;&amp; curRoi(4) &gt; 0 &amp;&amp; abs(curRoi(1) - curRoi(2))&gt;0.<span class="keyword">...</span>
+        &amp;&amp; abs(curRoi(3) - curRoi(4)) &gt; 0
+        axes(handles.axesStat);
+        roiRegion = uint16(oriImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4)));
+        maxValue = max(max(roiRegion));
+        minValue = min(min(roiRegion));
+        [counts x] = imhist(roiRegion,65536);
+        imhist(roiRegion,65536);
+        set(gca,<span class="string">'xlim'</span>,[minValue maxValue],<span class="string">'ylim'</span> ,[0 max(counts)]);
+    <span class="keyword">else</span>
+        axes(handles.axesStat);
+        plot([1 1],[0 0]);
+    <span class="keyword">end</span>
 <span class="keyword">end</span>
 set(handles.ckbGoodQual,<span class="string">'Value'</span>,flagGoodQual);
 
@@ -699,9 +754,6 @@ set(handles.edtDispNumTime,<span class="string">'string'</span>,<span class="str
 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
 
 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of tglBtnZoomReset</span>
-<span class="comment">%todo:1. get the toggle state</span>
-<span class="comment">%todo:2. open or close the zoom function according to the state</span>
-
 
 <span class="comment">% --- Executes on button press in tglBtnZoom.</span>
 <span class="keyword">function</span> tglBtnZoom_Callback(hObject, eventdata, handles)
@@ -718,14 +770,15 @@ tglbtnState = get(hObject,<span class="string">'value'</span>);
     zoom <span class="string">off</span>;
 <span class="keyword">end</span>
 
-<span class="comment">% --- Executes on button press in btnZoomReset.</span>
-<span class="keyword">function</span> btnZoomReset_Callback(hObject, eventdata, handles)
-<span class="comment">% hObject    handle to btnZoomReset (see GCBO)</span>
+<span class="comment">% --- Executes on button press in tglBtnSegShow.</span>
+<span class="keyword">function</span> tglBtnSegShow_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to tglBtnSegShow (see GCBO)</span>
 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-<span class="comment">%todo: zoom reset.</span>
-<span class="comment">% zoom reset;</span>
-<span class="comment">% guidata(hObject,handles);</span>
+<span class="comment">%todo:1. if the state changes, reload the current image</span>
+
+loadDcmImages(handles);
+guidata(hObject,handles);
 
 <span class="keyword">function</span> [slice series] = singleInd2doubleInd(singleIndex,handles)
 <span class="comment">%todo:1. get the whole location</span>
@@ -769,31 +822,89 @@ tglbtnState = get(handles.tglBtnDataCursor,<span class="string">'value'</span>);
 <span class="comment">% hObject    handle to btnStatInfo (see GCBO)</span>
 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-<span class="comment">%todo:1. if it is in datacursormode,get the position in pixel</span>
-<span class="comment">%todo:2. read all the dcm files, and collect all the gray value in arr</span>
-<span class="comment">%todo:3. display it in axesStat</span>
 
-tglbtnState = get(handles.tglBtnDataCursor,<span class="string">'value'</span>);
-<span class="keyword">if</span> tglbtnState == 0
-    datacursormode <span class="string">off</span>;
+curSeries = handles.uidata.curSeries;
+curSlice = handles.uidata.curSlice;
+curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+curRoi = floor(handles.uidata.allRoi(curIndex,:));
+<span class="keyword">if</span> ~(curRoi(1) &gt;= 0 &amp;&amp; curRoi(2) &gt; 0 &amp;&amp; curRoi(3) &gt; 0 &amp;&amp; curRoi(4) &gt; 0 &amp;&amp; abs(curRoi(1) - curRoi(2))&gt;0.<span class="keyword">...</span>
+    &amp;&amp; abs(curRoi(3) - curRoi(4)) &gt; 0)
     <span class="keyword">return</span>;
 <span class="keyword">end</span>
-dcm_obj = datacursormode(handles.figure1);
-struct_info = getCursorInfo(dcm_obj);
-pos = struct_info.Position;
 
 dcmInfo = handles.uidata.dcmInfo;
 locNum = handles.uidata.locationNumber;
-n = length(dcmInfo)/locNum;
-arr = zeros(n,1);
-<span class="keyword">for</span> i = 1:locNum:n
-    img = dicomread(dcmInfo{i});
-    imgToShow = visualProcess(img,handles);
-    arr(i) = imgToShow(pos(1),pos(2));
+n = length(dcmInfo);
+j = 1;
+
+refImg = double(dicomread(dcmInfo{curIndex}));<span class="comment">% &#38656;&#27491;&#30830;&#24615;&#39564;&#35777;</span>
+refImgLocal = refImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
+refImgLocal = refImgLocal(:);
+refImg = refImg(:);
+<span class="keyword">for</span> i = curSlice:locNum:n
+    img = double(dicomread(dcmInfo{i}));
+    imgLocal = img(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
+    imgLocal = imgLocal(:);
+    img = img(:);
+
+    a1 =0.01;a2 = 0.01;a3 =0.01;
+    a = 0.1; b = 0.2; c = 0.7;
+    u1 = mean(refImgLocal);u2 = mean(imgLocal);
+    c1 = std(refImgLocal);c2 = std(imgLocal);
+    c12_tmp = cov(refImgLocal,imgLocal);
+    c12 = c12_tmp(2);
+    l = (2*u1*u2+a1)/(u1*u1+u2*u2+a1);
+    c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
+    s = (2*c12+a3)/(c1*c2+a3);
+    ssimLocal(j) = l^a + c^b + s^c;
+
+    t3 = corrcoef(refImgLocal,imgLocal);
+    corrLocal(j) = t3(2);
+    contr(j) = cmptContr(img);
+<span class="comment">%     arrEntropy(j) = entropy(double(img));</span>
+    j = j + 1;
 <span class="keyword">end</span>
 
-axes(handles.axesStat);
-plot(arr);
+ssimMax = find(diff(sign(diff(ssimLocal)))&lt;0) + 1;
+corrMax = find(diff(sign(diff(corrLocal)))&lt;0) + 1;
+
+ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
+<span class="comment">%&#23581;&#35797;&#23545;&#21442;&#32771;&#22270;&#20687;&#20998;10&#32423;&#36827;&#34892;&#27169;&#31946;&#65292;&#27604;&#36739;&#20854;&#20182;&#22270;&#20687;&#19982;&#36825;10&#32423;&#20013;&#21738;&#19968;&#32423;&#30456;&#20284;&#65292;&#20063;&#23601;&#30830;&#23450;&#20102;&#35813;&#22270;&#20687;&#30340;&#27169;&#31946;&#31243;&#24230;</span>
+imgRef =  double(dicomread(dcmInfo{curIndex}));
+<span class="keyword">for</span> i = 1:10
+    <span class="comment">%filt = fspecial('motion',i*1.9,theta);</span>
+    filt = fspecial(<span class="string">'gaussian'</span>,3,i*0.095);
+    imgBlurry(:,:,i) = imfilter(imgRef,filt,<span class="string">'circular'</span>);
+<span class="keyword">end</span>
+num = length(ssimIndex);
+<span class="keyword">for</span> p = 1:num
+    img = double(dicomread(dcmInfo{ssimIndex(p)}));
+    <span class="keyword">for</span> i = 1:10
+        tmp = corrcoef(imgBlurry(:,:,i),img);
+        similarity(i) = tmp(2);
+    <span class="keyword">end</span>
+    tmp = find(similarity == max(similarity));
+    blurDegree(p) = tmp(1);
+<span class="keyword">end</span>
+tmp = blurDegree;
+tmp(tmp==min(tmp)) = [];
+t = min(tmp);
+ssimIndex = ssimIndex(blurDegree &lt;= t);
+ssimMax = ssimMax(blurDegree &lt;= t);
+<span class="comment">%====================================</span>
+<span class="keyword">for</span> i=1:length(ssimIndex)
+    img = double(dicomread(dcmInfo{ssimIndex(i)}));
+    tmp = corrcoef(imgBlurry(:,:,1),img);
+    scores(i) = tmp(2);
+<span class="keyword">end</span>
+scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
+<span class="comment">%scores = vpa(scores,3);</span>
+<span class="comment">%====================================</span>
+<span class="comment">%compute the similarity again for the images in ssimMax</span>
+<span class="comment">%4 arguments:single index, series numbers, scores for them, num of images in current location.</span>
+indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum);
+
+
 
 <span class="comment">% --- Executes on mouse press over axes background.</span>
 <span class="keyword">function</span> axesImg_ButtonDownFcn(hObject, eventdata, handles)
@@ -860,9 +971,11 @@ state = get(handles.tglBtnDrawRoi,<span class="string">'Value'</span>);
 slice = handles.uidata.curSlice;
 series = handles.uidata.curSeries;
 dcmInd = doubleInd2singleInd(slice,series,handles);
-
-handles.uidata.allRoi(dcmInd,:) = [handles.uidata.curPt2(2) handles.uidata.curPt1(2)<span class="keyword">...</span>
-                handles.uidata.curPt1(1) handles.uidata.curPt2(1)];
+ymaxmin = sort([handles.uidata.curPt2(2) handles.uidata.curPt1(2)],<span class="string">'descend'</span>);
+xminmax = sort([handles.uidata.curPt1(1) handles.uidata.curPt2(1)],<span class="string">'ascend'</span>);
+handles.uidata.allRoi(dcmInd,:) = [ymaxmin(1) ymaxmin(2) xminmax(1) xminmax(2)];
+<span class="comment">% handles.uidata.allRoi(dcmInd,:) = [handles.uidata.curPt2(2) handles.uidata.curPt1(2)...</span>
+<span class="comment">%                 handles.uidata.curPt1(1) handles.uidata.curPt2(1)];</span>
 handles.uidata.curPt1 = [];
 handles.uidata.curPt2 = [];
 handles.uidata.isDrawingRoi = 0;
@@ -876,6 +989,28 @@ loadDcmImages(handles);
 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
 
 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of tglBtnDrawRoi</span>
+
+
+<span class="comment">% --- Executes on button press in btnSelectOptimum.</span>
+<span class="keyword">function</span> btnSelectOptimum_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnSelectOptimum (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+<span class="comment">%todo:1. select the best 10 images in curSlice location</span>
+<span class="comment">%todo:2. display interface for hightqualityselection</span>
+
+
+
+<span class="comment">% --- Executes on button press in btnReset.</span>
+<span class="keyword">function</span> btnReset_Callback(hObject, eventdata, handles)
+<span class="comment">% hObject    handle to btnReset (see GCBO)</span>
+<span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+<span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+
+<span class="comment">% zoom reset;</span>
+<span class="comment">% zoom off;</span>
+<span class="comment">%set(handles.tglBtnZoom,'Value',0);</span>
+<span class="comment">%loadDcmImages(handles);</span>
 </pre><img vspace="5" hspace="5" src="ui_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.6<br></p>
       </div>
@@ -905,7 +1040,7 @@ function varargout = ui(varargin)
 
 % Edit the above text to modify the response to help ui
 
-% Last Modified by GUIDE v2.5 09-Dec-2012 19:04:04
+% Last Modified by GUIDE v2.5 19-Dec-2012 17:42:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -951,6 +1086,8 @@ handles.uidata.figureWidth = 1200;
 handles.uidata.curCanvas = 0;
 handles.uidata.curSeries = 0;
 handles.uidata.curSlice = 0;
+handles.uidata.curSegSlice = 0;
+handles.uidata.curSliceRoi = 0;
 handles.uidata.curSelectedSeries = 0;
 handles.uidata.curSelectedSlice = 0;
 handles.uidata.contrast = 0;
@@ -977,7 +1114,9 @@ tglBtnDataCursor = importdata('icons\tool_data_cursor.png');
 set(handles.tglBtnZoom,'CDATA',im2double(tglBtnZoomIn.cdata));
 %set(handles.tglBtnZoomReset,'CDATA',im2double(tglBtnZoomOut.cdata));
 set(handles.tglBtnDataCursor,'CDATA',im2double(tglBtnDataCursor.cdata));
-
+%hide the xticklabel and xytick.
+set(handles.axesImg,'box','on','XTickLabel','','XTickLabel','','XTick',[],'YTick',[]);
+addpath(genpath(pwd));
 % Update handles structure
 guidata(hObject, handles);
 
@@ -1091,6 +1230,10 @@ if ((fname~=0))
     set(handles.sldSeries,'sliderstep',[1/(maxValue-minValue) 1/(maxValue-minValue)]);
     set(handles.sldSeries,'value',minValue);
     set(handles.sldSeries,'visible','on');
+%     %set the position of axes
+%     set(handles.axesImg,'Position',[0.13 0.4 0.4 0.59]);
+%     set(handles.axesStat,'Position',[0.57 0.4 0.4 0.59]);
+    
     
     guidata(hObject,handles);
 end
@@ -1220,7 +1363,24 @@ function btnSeg_Callback(hObject, eventdata, handles)
 % hObject    handle to btnSeg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+%todo:1. if there's roi in curimg,return
+%todo:2. update handles.uidata.curSegSlice ,handles.uidata.curSliceRoi,set
+%        the state of
 
+curSeries = handles.uidata.curSeries;
+curSlice = handles.uidata.curSlice;
+curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+curRoi = floor(handles.uidata.allRoi(curIndex,:));
+if ~(curRoi(1) >= 0 && curRoi(2) > 0 && curRoi(3) > 0 && curRoi(4) > 0 && abs(curRoi(1) - curRoi(2))>0....
+    && abs(curRoi(3) - curRoi(4)) > 0)
+    return;
+end
+
+handles.uidata.curSegSlice = curSlice;
+handles.uidata.curSliceRoi = curRoi;
+set(handles.tglBtnSegShow,'Value',1);
+handles = loadDcmImages(handles);
+guidata(hObject,handles);
 
 % REPLACE_WITH_DASH_DASH- Executes on button press in btnSaveSeg.
 function btnSaveSeg_Callback(hObject, eventdata, handles)
@@ -1232,17 +1392,22 @@ function [handles]=loadDcmImages(handles)
 %todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi
 %todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively
 %todo:3. process the oriImg according to the window width and window
-%        center,then show it.
+%        center.if the image needs segment and the state of tglBtnSegShow is on
+%        ,call ostu to get the threshold,select the object and set it to 
+%        max value,then show it.
 %todo:4. if the image was marked goodqual,draw the yellow box around it.
-%        if the image has ori, draw ori box,update the ckbGoodQual control
+%        if the image has ori, draw ori box,update the ckbGoodQual
+%        control,then display the histogram of the ori
 
 curSeries = handles.uidata.curSeries;
 curSlice = handles.uidata.curSlice;
 curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+curSegSlice = handles.uidata.curSegSlice;
 % luminosity = handles.uidata.luminosity;
 % contrasts = handles.uidata.contrast;
 flagGoodQual = handles.uidata.flagGoodQual(curSeries,curSlice);
-curRoi = handles.uidata.allRoi(curIndex,:);
+curRoi = floor(handles.uidata.allRoi(curIndex,:));
+curSliceRoi = floor(handles.uidata.curSliceRoi);
 
 oriImg = double(dicomread(handles.uidata.dcmInfo{curIndex}));
 maxx=max(max(oriImg));
@@ -1264,6 +1429,18 @@ if (tmpW > (maxx-minn))
 end
 
 imgToShow = visualProcess(oriImg,handles);
+tglBtnSegShowState = get(handles.tglBtnSegShow,'Value');
+if curSlice == curSegSlice && tglBtnSegShowState == 1
+    thresholdValue = ostu(imgToShow);
+    roiRegion = imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4));
+    roiRegion(roiRegion > thresholdValue) = 256;
+    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4)) = roiRegion;
+    imgToShow(:,:,1) = imgToShow(:,:,1);
+    imgToShow(:,:,2) = imgToShow(:,:,1);
+    imgToShow(:,:,3) = imgToShow(:,:,1);
+    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4),2) = 0;
+    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4),3) = 0;
+end
 imshow(imgToShow,'parent',handles.axesImg);
 
 % pos = get(handles.axesImg,'position');
@@ -1274,6 +1451,19 @@ if flagGoodQual == 1 && handles.uidata.isDrawingRoi == 0
 end
 if sum(curRoi)>0 && handles.uidata.isDrawingRoi == 0
     drawBoxes(handles.axesImg,curRoi,[0 1 0]);
+    if curRoi(1) >= 0 && curRoi(2) > 0 && curRoi(3) > 0 && curRoi(4) > 0 && abs(curRoi(1) - curRoi(2))>0....
+        && abs(curRoi(3) - curRoi(4)) > 0
+        axes(handles.axesStat);
+        roiRegion = uint16(oriImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4)));
+        maxValue = max(max(roiRegion));
+        minValue = min(min(roiRegion));
+        [counts x] = imhist(roiRegion,65536);
+        imhist(roiRegion,65536);
+        set(gca,'xlim',[minValue maxValue],'ylim' ,[0 max(counts)]);
+    else
+        axes(handles.axesStat);
+        plot([1 1],[0 0]);
+    end
 end
 set(handles.ckbGoodQual,'Value',flagGoodQual);
 
@@ -1510,9 +1700,6 @@ function tglBtnZoomReset_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of tglBtnZoomReset
-%todo:1. get the toggle state
-%todo:2. open or close the zoom function according to the state
-
 
 % REPLACE_WITH_DASH_DASH- Executes on button press in tglBtnZoom.
 function tglBtnZoom_Callback(hObject, eventdata, handles)
@@ -1529,14 +1716,15 @@ else
     zoom off;
 end
 
-% REPLACE_WITH_DASH_DASH- Executes on button press in btnZoomReset.
-function btnZoomReset_Callback(hObject, eventdata, handles)
-% hObject    handle to btnZoomReset (see GCBO)
+% REPLACE_WITH_DASH_DASH- Executes on button press in tglBtnSegShow.
+function tglBtnSegShow_Callback(hObject, eventdata, handles)
+% hObject    handle to tglBtnSegShow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-%todo: zoom reset.
-% zoom reset;
-% guidata(hObject,handles);
+%todo:1. if the state changes, reload the current image
+
+loadDcmImages(handles);
+guidata(hObject,handles);
 
 function [slice series] = singleInd2doubleInd(singleIndex,handles)
 %todo:1. get the whole location
@@ -1580,31 +1768,89 @@ function btnStatInfo_Callback(hObject, eventdata, handles)
 % hObject    handle to btnStatInfo (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-%todo:1. if it is in datacursormode,get the position in pixel
-%todo:2. read all the dcm files, and collect all the gray value in arr
-%todo:3. display it in axesStat
 
-tglbtnState = get(handles.tglBtnDataCursor,'value');
-if tglbtnState == 0
-    datacursormode off;
+curSeries = handles.uidata.curSeries;
+curSlice = handles.uidata.curSlice;
+curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
+curRoi = floor(handles.uidata.allRoi(curIndex,:));
+if ~(curRoi(1) >= 0 && curRoi(2) > 0 && curRoi(3) > 0 && curRoi(4) > 0 && abs(curRoi(1) - curRoi(2))>0....
+    && abs(curRoi(3) - curRoi(4)) > 0)
     return;
 end
-dcm_obj = datacursormode(handles.figure1);
-struct_info = getCursorInfo(dcm_obj);
-pos = struct_info.Position;
 
 dcmInfo = handles.uidata.dcmInfo;
 locNum = handles.uidata.locationNumber;
-n = length(dcmInfo)/locNum;
-arr = zeros(n,1);
-for i = 1:locNum:n
-    img = dicomread(dcmInfo{i});
-    imgToShow = visualProcess(img,handles);
-    arr(i) = imgToShow(pos(1),pos(2));
+n = length(dcmInfo);
+j = 1;
+
+refImg = double(dicomread(dcmInfo{curIndex}));% 需正确性验证
+refImgLocal = refImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
+refImgLocal = refImgLocal(:);
+refImg = refImg(:);
+for i = curSlice:locNum:n
+    img = double(dicomread(dcmInfo{i}));
+    imgLocal = img(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
+    imgLocal = imgLocal(:);
+    img = img(:);
+    
+    a1 =0.01;a2 = 0.01;a3 =0.01;
+    a = 0.1; b = 0.2; c = 0.7;
+    u1 = mean(refImgLocal);u2 = mean(imgLocal);
+    c1 = std(refImgLocal);c2 = std(imgLocal);
+    c12_tmp = cov(refImgLocal,imgLocal);
+    c12 = c12_tmp(2);
+    l = (2*u1*u2+a1)/(u1*u1+u2*u2+a1);
+    c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
+    s = (2*c12+a3)/(c1*c2+a3);
+    ssimLocal(j) = l^a + c^b + s^c;
+    
+    t3 = corrcoef(refImgLocal,imgLocal);
+    corrLocal(j) = t3(2);
+    contr(j) = cmptContr(img);
+%     arrEntropy(j) = entropy(double(img));
+    j = j + 1;
 end
 
-axes(handles.axesStat);
-plot(arr);
+ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
+corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
+
+ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
+%尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
+imgRef =  double(dicomread(dcmInfo{curIndex}));
+for i = 1:10
+    %filt = fspecial('motion',i*1.9,theta);
+    filt = fspecial('gaussian',3,i*0.095);
+    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
+end
+num = length(ssimIndex);
+for p = 1:num
+    img = double(dicomread(dcmInfo{ssimIndex(p)}));
+    for i = 1:10
+        tmp = corrcoef(imgBlurry(:,:,i),img);
+        similarity(i) = tmp(2);
+    end
+    tmp = find(similarity == max(similarity));
+    blurDegree(p) = tmp(1);
+end
+tmp = blurDegree;
+tmp(tmp==min(tmp)) = [];
+t = min(tmp);
+ssimIndex = ssimIndex(blurDegree <= t);
+ssimMax = ssimMax(blurDegree <= t);
+%====================================
+for i=1:length(ssimIndex)
+    img = double(dicomread(dcmInfo{ssimIndex(i)}));
+    tmp = corrcoef(imgBlurry(:,:,1),img);
+    scores(i) = tmp(2);
+end
+scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
+%scores = vpa(scores,3);
+%====================================
+%compute the similarity again for the images in ssimMax
+%4 arguments:single index, series numbers, scores for them, num of images in current location.
+indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum);
+
+    
 
 % REPLACE_WITH_DASH_DASH- Executes on mouse press over axes background.
 function axesImg_ButtonDownFcn(hObject, eventdata, handles)
@@ -1671,9 +1917,11 @@ end
 slice = handles.uidata.curSlice;
 series = handles.uidata.curSeries;
 dcmInd = doubleInd2singleInd(slice,series,handles);
-
-handles.uidata.allRoi(dcmInd,:) = [handles.uidata.curPt2(2) handles.uidata.curPt1(2)...
-                handles.uidata.curPt1(1) handles.uidata.curPt2(1)];
+ymaxmin = sort([handles.uidata.curPt2(2) handles.uidata.curPt1(2)],'descend');
+xminmax = sort([handles.uidata.curPt1(1) handles.uidata.curPt2(1)],'ascend');
+handles.uidata.allRoi(dcmInd,:) = [ymaxmin(1) ymaxmin(2) xminmax(1) xminmax(2)];
+% handles.uidata.allRoi(dcmInd,:) = [handles.uidata.curPt2(2) handles.uidata.curPt1(2)...
+%                 handles.uidata.curPt1(1) handles.uidata.curPt2(1)];
 handles.uidata.curPt1 = [];
 handles.uidata.curPt2 = [];
 handles.uidata.isDrawingRoi = 0;
@@ -1689,6 +1937,26 @@ function tglBtnDrawRoi_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of tglBtnDrawRoi
 
 
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnSelectOptimum.
+function btnSelectOptimum_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSelectOptimum (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%todo:1. select the best 10 images in curSlice location
+%todo:2. display interface for hightqualityselection
+
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in btnReset.
+function btnReset_Callback(hObject, eventdata, handles)
+% hObject    handle to btnReset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% zoom reset;
+% zoom off;
+%set(handles.tglBtnZoom,'Value',0);
+%loadDcmImages(handles);
 
 ##### SOURCE END #####
 -->
