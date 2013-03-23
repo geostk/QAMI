@@ -710,11 +710,18 @@ ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
 imgRef =  double(dicomread(dcmInfo{curIndex}));
 imgBlurry(:,:,1) = imgRef;
+im = dct2(imgRef);
+[m n] = size(imgRef);
+imgBlurry(:,:,1) = imgRef;
 for i = 2:10
-    %filt = fspecial('motion',i*1.9,theta);
-    filt = fspecial('gaussian',3,(i-1)*0.1);
-    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
+    im(m-i*7-70:end,n-i*7-70:end) = 0;
+    imgBlurry(:,:,i) = idct2(im);
 end
+% for i = 2:10
+%     %filt = fspecial('motion',i*1.9,theta);
+%     filt = fspecial('gaussian',3,(i-1)*0.1);
+%     imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
+% end
 num = length(ssimIndex);
 for p = 1:num
     img = double(dicomread(dcmInfo{ssimIndex(p)}));
