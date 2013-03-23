@@ -827,10 +827,12 @@ indices = HighQualitySelection(dcmInfo{ssimIndex},sMax,length(dcmInfo)/locNum);
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
 theta = 0;
 imgRef =  double(dicomread(dcmInfo{955}));
-for i = 1:10
-    %filt = fspecial('motion',i*1.9,theta);
-    filt = fspecial('gaussian',3,i*0.095);
-    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
+im = dct2(imgRef);
+[m n] = size(imgRef);
+imgBlurry(:,:,1) = imgRef;
+for i = 2:10
+    im(m-i*7-70:end,n-i*7-70:end) = 0;
+    imgBlurry(:,:,i) = idct2(im);
 end
 num = length(ssimIndex);
 for p = 1:num
