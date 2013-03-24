@@ -712,7 +712,7 @@ imgRef =  double(dicomread(dcmInfo{curIndex}));
 imgBlurry(:,:,1) = imgRef;
 for i = 2:10
     %filt = fspecial('motion',i*1.9,theta);
-    filt = fspecial('gaussian',3,(i-1)*0.1);
+    filt = fspecial('gaussian',3,(i-1)*0.07+0.3);
     imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
 end
 num = length(ssimIndex);
@@ -725,6 +725,12 @@ for p = 1:num
     tmp = find(similarity == max(similarity));
     blurDegree(p) = tmp(1);
 end
+% ¡Ÿ ±¥˙¬Î======================
+figure,plot(blurDegree,'-*'),hold on;
+for i = 1:num
+    text(i,blurDegree(i),num2str(ssimMax(i)));
+end
+% ======================
 tmp = blurDegree;
 tmp(tmp==min(tmp)) = [];
 t = min(tmp);

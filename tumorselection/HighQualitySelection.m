@@ -78,7 +78,7 @@ min = 1;
 max = n;
 set(handles.sldBrowse,'Min',min);
 set(handles.sldBrowse,'Max',max);
-set(handles.sldBrowse,'sliderstep',[2/(max-min) 2/(max-min)]);
+set(handles.sldBrowse,'sliderstep',[1/(max-min) 1/(max-min)]);
 set(handles.sldBrowse,'value',1);
 
 
@@ -290,6 +290,9 @@ flagGoodQual = zeros(size(flagGoodQual));
 curSeries = sMax{1}(logical(goodQuality));
 flagGoodQual(curSeries,mainHandle.uidata.curSlice) = 1;
 mainHandle.uidata.flagGoodQual =  flagGoodQual;
+if isempty(curSeries)
+    return;
+end
 mainHandle.uidata.curSeries = curSeries(1);
 guidata(hObject,mainHandle);
 
