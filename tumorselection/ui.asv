@@ -710,22 +710,38 @@ ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
 %尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
 imgRef =  double(dicomread(dcmInfo{curIndex}));
 imgBlurry(:,:,1) = imgRef;
-im = dct2(imgRef);
-[m n] = size(imgRef);
-imgBlurry(:,:,1) = imgRef;
+%todo:1. 51张图像与参考图像的相似度
+%todo:2. 取第2大值与最小值对应图像的索引
+%todo:3. define a function,make imgRef and img as input args,outputs the reservered cols and rows 
+num = length(ssimIndex);
+for i = 1:num
+    img = double(dicomread(dcmInfo{ssimIndex(i)}));
+    tmp = corrcoef(imgRef,img);
+    similarity(i) = tmp(2);
+end
+
+minIndex = find(similarity == min(similarity));
+similarity(similarity == max(similarity)) = 0;
+maxIndex = find(similarity == max(similarity));
+imgMax = double(dicomread(dcmInfo{ssimIndex(maxIndex)}));
+imgMin = double(dicomread(dcmInfo{ssimIndex(minIndex)}));
+
+[rmax cmax] = approximateFrequency(imgRef,imgMax);
+[rmin cmin] = approximateFrequency(imgRef,imgMin);
 for i = 2:10
-    im(m-i*7-70:end,n-i*7-70:end) = 0;
-    imgBlurry(:,:,i) = idct2(im);
+    %filt = fspecial('motion',i*1.9,theta);
+    filt = fspecial('gaussian',3,(i-1)*0.07+0.3);
+    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
 end
 num = length(ssimIndex);
 for p = 1:num
     img = double(dicomread(dcmInfo{ssimIndex(p)}));
     for i = 1:10
-        tmp = imgBlurry(:,:,i)-img;
-        figure,subplot(1,2,1),imshow(imgBlurry)imshow(tmp,[]);
+        tmp = corrcoef(imgBlurry(:,:,i),img);
+        similarity(i) = tmp(2);
     end
-%     tmp = find(similarity == max(similarity));
-%     blurDegree(p) = tmp(1);
+    tmp = find(similarity == max(similarity));
+    blurDegree(p) = tmp(1);
 end
 % 临时代码======================
 figure,plot(blurDegree,'-*'),hold on;
@@ -752,6 +768,29 @@ scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
 indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
 
     
+function [r c] = approximateFrequency(im1,im2)
+%todo:1. 
+%todo:2.
+
+[m n] = size(im1);
+tmp = dct2(im1);
+for i = 1:10:m
+    tmp1 = tmp1(1:i,1:i);
+    im1Degreded = idct2(tmp1);
+    tmp = corrcoef(im1Degreded,im2);
+    similarity(i) = tmp(2);
+end
+figure,plot(similarity,'-*'),hold on;
+for i = 1:length(similarity)
+    text(i,similarity(i),num2str(i));
+end
+
+r=1;c=1;
+
+
+
+
+
 
 % --- Executes on mouse press over axes background.
 function axesImg_ButtonDownFcn(hObject, eventdata, handles)
