@@ -726,22 +726,11 @@ maxIndex = find(similarity == max(similarity));
 imgMax = double(dicomread(dcmInfo{ssimIndex(maxIndex)}));
 imgMin = double(dicomread(dcmInfo{ssimIndex(minIndex)}));
 
-[rmax cmax] = approximateFrequency(imgRef,imgMax);
-[rmin cmin] = approximateFrequency(imgRef,imgMin);
-for i = 2:10
-    %filt = fspecial('motion',i*1.9,theta);
-    filt = fspecial('gaussian',3,(i-1)*0.07+0.3);
-    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
-end
 num = length(ssimIndex);
-for p = 1:num
+freImgRef = dct2(imgRef);
+for p = 5:num
     img = double(dicomread(dcmInfo{ssimIndex(p)}));
-    for i = 1:10
-        tmp = corrcoef(imgBlurry(:,:,i),img);
-        similarity(i) = tmp(2);
-    end
-    tmp = find(similarity == max(similarity));
-    blurDegree(p) = tmp(1);
+    approximateFrequency(freImgRef,img);
 end
 % ¡Ÿ ±¥˙¬Î======================
 figure,plot(blurDegree,'-*'),hold on;
@@ -768,12 +757,12 @@ scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
 indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
 
     
-function [r c] = approximateFrequency(im1,im2)
+function approximateFrequency(freImgRef,im2)
 %todo:1. 
 %todo:2.
 
-[m n] = size(im1);
-tmp = dct2(im1);
+[m n] = size(freImgRef);
+tmp = freImgRef;
 tmp1 = zeros(m,n);
 j=1;
 for i = 1:m
@@ -784,11 +773,12 @@ for i = 1:m
     j = j+1;
 end
 figure,plot(similarity,'-*'),hold on;
-for i = 1:length(similarity)
-    text(i,similarity(i),num2str(i));
-end
-
-r=1;c=1;
+i = find(similarity == max(similarity));
+j = max(similarity);
+text(i,j,'v');
+% for i = 1:length(similarity)
+%     text(i,similarity(i),num2str(i));
+% end
 
 
 
