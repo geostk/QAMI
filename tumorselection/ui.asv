@@ -370,90 +370,7 @@ function btnSaveSeg_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-function [handles]=loadDcmImages(handles)
-%todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi
-%todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively
-%todo:3. process the oriImg according to the window width and window
-%        center.if the image needs segment and the state of tglBtnSegShow is on
-%        ,call ostu to get the threshold,select the object and set it to 
-%        max value,then show it.
-%todo:4. if the image was marked goodqual,draw the yellow box around it.
-%        if the image has ori, draw ori box,update the ckbGoodQual
-%        control,then display the histogram of the ori
 
-curSeries = handles.uidata.curSeries;
-curSlice = handles.uidata.curSlice;
-curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
-curSegSlice = handles.uidata.curSegSlice;
-% luminosity = handles.uidata.luminosity;
-% contrasts = handles.uidata.contrast;
-flagGoodQual = handles.uidata.flagGoodQual(curSeries,curSlice);
-curRoi = floor(handles.uidata.allRoi(curIndex,:));
-curSliceRoi = floor(handles.uidata.curSliceRoi);
-
-oriImg = double(dicomread(handles.uidata.dcmInfo{curIndex}));
-maxx=max(max(oriImg));
-minn=min(min(oriImg));
-set(handles.sldWinCenter,'max',maxx); 
-set(handles.sldWinCenter,'min',minn); 
-set(handles.sldWinWidth,'max',maxx-minn); 
-set(handles.sldWinWidth,'min',0);         
-tmpW =  get(handles.sldWinWidth,'Value');
-tmpC = get(handles.sldWinCenter,'Value');
-if (tmpC > maxx)
-    set(handles.sldWinCenter,'value',maxx); 
-else if (tmpC< minn)
-        set(handles.sldWinCenter,'value',minn); 
-    end
-end
-if (tmpW > (maxx-minn))
-    set(handles.sldWinWidth,'value',maxx-minn); 
-end
-
-imgToShow = visualProcess(oriImg,handles);
-tglBtnSegShowState = get(handles.tglBtnSegShow,'Value');
-if curSlice == curSegSlice && tglBtnSegShowState == 1
-    thresholdValue = ostu(imgToShow);
-    roiRegion = imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4));
-    roiRegion(roiRegion > thresholdValue) = 256;
-    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4)) = roiRegion;
-    imgToShow(:,:,1) = imgToShow(:,:,1);
-    imgToShow(:,:,2) = imgToShow(:,:,1);
-    imgToShow(:,:,3) = imgToShow(:,:,1);
-    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4),2) = 0;
-    imgToShow(curSliceRoi(2):curSliceRoi(1),curSliceRoi(3):curSliceRoi(4),3) = 0;
-end
-imshow(imgToShow,'parent',handles.axesImg);
-
-% pos = get(handles.axesImg,'position');
-tpos(1) = 256; tpos(2) = 1; tpos(3) = 1; tpos(4) = 256;
-tglDrawState = get(handles.tglBtnDrawRoi,'Value');
-if flagGoodQual == 1 && handles.uidata.isDrawingRoi == 0
-    drawBoxes(handles.axesImg,tpos,[1 1 0]);
-end
-if sum(curRoi)>0 && handles.uidata.isDrawingRoi == 0
-    drawBoxes(handles.axesImg,curRoi,[0 1 0]);
-    if curRoi(1) >= 0 && curRoi(2) > 0 && curRoi(3) > 0 && curRoi(4) > 0 && abs(curRoi(1) - curRoi(2))>0....
-        && abs(curRoi(3) - curRoi(4)) > 0
-        axes(handles.axesStat);
-        roiRegion = uint16(oriImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4)));
-        maxValue = max(max(roiRegion));
-        minValue = min(min(roiRegion));
-        [counts x] = imhist(roiRegion,65536);
-        imhist(roiRegion,65536);
-        set(gca,'xlim',[minValue maxValue],'ylim' ,[0 max(counts)]);
-    else
-        axes(handles.axesStat);
-        plot([1 1],[0 0]);
-    end
-end
-set(handles.ckbGoodQual,'Value',flagGoodQual);
-
-function drawBoxes(h,pos,color)
-axes(h)
-hold on
-plot(h,[pos(3) pos(4) pos(4) pos(3 ) pos(3)],[pos(1) pos(1) pos(2) pos(2) pos(1)],'color',color,'linestyle','-','linewidth',3);
-hold off
 
 function edtDispNumTime_Callback(hObject, eventdata, handles)
 % hObject    handle to edtDispNumTime (see GCBO)
@@ -720,13 +637,6 @@ if slice == 0
 end
 series = ceil(singleIndex / wholeSlice);
 
-function singleIndex = doubleInd2singleInd(slice,series,handles)
-%todo: get the whole slice,compute the singleIndex
-
-wholeSlice = handles.uidata.locationNumber;
-singleIndex = wholeSlice * (series - 1) + slice;
-
-
 % --- Executes on button press in tglBtnDataCursor.
 function tglBtnDataCursor_Callback(hObject, eventdata, handles)
 % hObject    handle to tglBtnDataCursor (see GCBO)
@@ -762,18 +672,28 @@ end
 
 dcmInfo = handles.uidata.dcmInfo;
 locNum = handles.uidata.locationNumber;
+timeNum = handles.uidata.timeNumber;
 n = length(dcmInfo);
 j = 1;
 
-refImg = double(dicomread(dcmInfo{curIndex}));% 需正确性验证
-refImgLocal = refImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
+imgRef = double(dicomread(dcmInfo{curIndex}));% 需正确性验证
+refImgLocal = imgRef(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
 refImgLocal = refImgLocal(:);
-refImg = refImg(:);
+
+%===============================================
+imgBlurry(:,:,1) = imgRef;
+im = dct2(imgRef);
+[m n] = size(imgRef);
+imgBlurry(:,:,1) = imgRef;
+for i = 2:10
+    im(m-i*7-70:end,n-i*7-70:end) = 0;
+    imgBlurry(:,:,i) = idct2(im);
+end
+
 for i = curSlice:locNum:n
     img = double(dicomread(dcmInfo{i}));
     imgLocal = img(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
     imgLocal = imgLocal(:);
-    img = img(:);
     
     a1 =0.01;a2 = 0.01;a3 =0.01;
     a = 0.1; b = 0.2; c = 0.7;
@@ -785,52 +705,35 @@ for i = curSlice:locNum:n
     c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
     s = (2*c12+a3)/(c1*c2+a3);
     ssimLocal(j) = l^a + c^b + s^c;
+    struEntire(j) = s;
     
-    t3 = corrcoef(refImgLocal,imgLocal);
-    corrLocal(j) = t3(2);
-    contr(j) = cmptContr(img);
-%     arrEntropy(j) = entropy(double(img));
-    j = j + 1;
-end
-
-ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
-corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
-
-ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
-%尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
-imgRef =  double(dicomread(dcmInfo{curIndex}));
-for i = 1:10
-    %filt = fspecial('motion',i*1.9,theta);
-    filt = fspecial('gaussian',3,i*0.095);
-    imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
-end
-num = length(ssimIndex);
-for p = 1:num
-    img = double(dicomread(dcmInfo{ssimIndex(p)}));
     for i = 1:10
         tmp = corrcoef(imgBlurry(:,:,i),img);
         similarity(i) = tmp(2);
     end
     tmp = find(similarity == max(similarity));
-    blurDegree(p) = tmp(1);
+    defnEntire(j) = (1);
+    
+    j = j + 1;
 end
-tmp = blurDegree;
-tmp(tmp==min(tmp)) = [];
-t = min(tmp);
-ssimIndex = ssimIndex(blurDegree <= t);
-ssimMax = ssimMax(blurDegree <= t);
-%====================================
-for i=1:length(ssimIndex)
-    img = double(dicomread(dcmInfo{ssimIndex(i)}));
-    tmp = corrcoef(imgBlurry(:,:,1),img);
-    scores(i) = tmp(2);
-end
-scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
-%scores = vpa(scores,3);
-%====================================
-%compute the similarity again for the images in ssimMax
-%4 arguments:single index, series numbers, scores for them, num of images in current location.
-indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
+
+handles.uidata.scores = zeros(locNum,timeNum,3);
+handles.uidata.scores(curSlice,:,1) = struEntire;
+handles.uidata.scores(curSlice,:,2) = defnEntire;
+handles.uidata.scores(curSlice,:,3) = ssimLocal;
+
+axes(handles.axesStat);
+plot(ssimLocal),hold on,plot(struEntire),plot(defnEntire);
+set(handles.txtStrutureScore,'String',['struture ' num2str(struEntire(curSeries))]);
+set(handles.txtComprehensiveScore,'String',['struture ' num2str(ssimLocal(curSeries))]);
+
+guidata(hObject,handles);
+
+% ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
+% corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
+
+%ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
+%indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
 
     
 
