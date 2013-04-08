@@ -765,17 +765,17 @@ function approximateFrequency(freImgRef,im2)
 tmp = freImgRef;
 tmp1 = zeros(m,n);
 j=1;
-for i = 1:m
+for i = 180:m
     tmp1(1:i,1:i) = tmp(1:i,1:i);
     im1Degreded = idct2(tmp1);
-    tmpc = corrcoef(im1Degreded,im2);
-    similarity(j) = tmpc(2);
+    tmpc = mi(im1Degreded,im2,'归一化互信息');
+    similarity(j) = tmpc(1);
     j = j+1;
 end
-figure,plot(similarity,'-*'),hold on;
+figure(1),plot(similarity,'-'),hold on;
 i = find(similarity == max(similarity));
 j = max(similarity);
-text(i,j,'v');
+text(i(1),j,'v');
 % for i = 1:length(similarity)
 %     text(i,similarity(i),num2str(i));
 % end
