@@ -24,6 +24,8 @@ curRoi = floor(handles.uidata.allRoi(curIndex,:));
 curSliceRoi = floor(handles.uidata.curSliceRoi);
 
 tmp = scores(curSlice,:,:);
+[a m n] = size(tmp);
+tmp = reshape(tmp,m,n);
 if sum(tmp(:)) > 0
     set(handles.txtStructureScore,'String',['structure ' num2str(tmp(curSeries,1))]);
     set(handles.txtComprehensiveScore,'String',['structure ' num2str(tmp(curSeries,3))]);

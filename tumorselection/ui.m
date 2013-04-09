@@ -690,7 +690,7 @@ for i = 2:10
     imgBlurry(:,:,i) = idct2(im);
 end
 
-for i = curSlice:locNum:n
+for i = curSlice:locNum:length(dcmInfo)
     img = double(dicomread(dcmInfo{i}));
     imgLocal = img(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
     imgLocal = imgLocal(:);
@@ -724,8 +724,8 @@ handles.uidata.scores(curSlice,:,3) = ssimLocal;
 
 axes(handles.axesStat);
 plot(ssimLocal),hold on,plot(struEntire),plot(defnEntire);
-set(handles.txtStrutureScore,'String',['struture ' num2str(struEntire(curSeries))]);
-set(handles.txtComprehensiveScore,'String',['struture ' num2str(ssimLocal(curSeries))]);
+set(handles.txtStructureScore,'String',['structure ' num2str(struEntire(curSeries))]);
+set(handles.txtComprehensiveScore,'String',['structure ' num2str(ssimLocal(curSeries))]);
 
 guidata(hObject,handles);
 
