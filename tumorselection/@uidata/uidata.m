@@ -43,6 +43,7 @@ classdef uidata
         
         contrast
         luminosity
+        scores
     end
     
     methods

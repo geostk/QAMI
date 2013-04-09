@@ -177,7 +177,9 @@ if ((fname~=0))
     tmpImg = dicomread(handles.uidata.dcmInfo{1});
     maxx = max(max(tmpImg));
     minn = min(min(tmpImg));
+    set(handles.sldWinCenter,'min',minn,'max',maxx);
     set(handles.sldWinCenter,'value',(maxx-minn)/2.0+minn);
+    set(handles.sldWinWidth,'min',minn,'max',maxx);
     set(handles.sldWinWidth,'value',maxx-minn); 
     
     handles.uidata.fileNamesIJ = cell(handles.uidata.timeNumber,handles.uidata.locationNumber);
@@ -196,7 +198,7 @@ if ((fname~=0))
     handles.uidata.curSlice = 1;
     handles.uidata.allRoi = zeros(n,4);
     handles.uidata.flagGoodQual = zeros(handles.uidata.timeNumber,handles.uidata.locationNumber);
-    handles = loadDcmImages(handles);
+    %handles = loadDcmImages(handles);
     set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
     set(handles.edtDispNumLoc,'String',num2str(handles.uidata.curSlice));
     
@@ -212,12 +214,10 @@ if ((fname~=0))
     set(handles.sldSeries,'sliderstep',[1/(maxValue-minValue) 1/(maxValue-minValue)]);
     set(handles.sldSeries,'value',minValue);
     set(handles.sldSeries,'visible','on');
-%     %set the position of axes
-%     set(handles.axesImg,'Position',[0.13 0.4 0.4 0.59]);
-%     set(handles.axesStat,'Position',[0.57 0.4 0.4 0.59]);
-    
+    handles.uidata.scores = zeros(handles.uidata.locationNumber,handles.uidata.timeNumber,3);    
     
     guidata(hObject,handles);
+    handles = loadDcmImages(handles);
 end
 toc
 
@@ -717,7 +717,7 @@ for i = curSlice:locNum:n
     j = j + 1;
 end
 
-handles.uidata.scores = zeros(locNum,timeNum,3);
+
 handles.uidata.scores(curSlice,:,1) = struEntire;
 handles.uidata.scores(curSlice,:,2) = defnEntire;
 handles.uidata.scores(curSlice,:,3) = ssimLocal;
