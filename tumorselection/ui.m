@@ -657,7 +657,7 @@ function btnStatInfo_Callback(hObject, eventdata, handles)
 % hObject    handle to btnStatInfo (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+tic
 curSeries = handles.uidata.curSeries;
 curSlice = handles.uidata.curSlice;
 curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
@@ -683,9 +683,10 @@ imgBlurry(:,:,1) = refImg;
 im = dct2(refImg);
 [k s] = size(refImg);
 imgBlurry(:,:,1) = refImg;
-for i = 2:10
-    im(k-i*7-70:end,s-i*7-70:end) = 0;
-    imgBlurry(:,:,i) = idct2(im);
+imTmp = zeros(k,s);
+for i = 170:k
+    imTmp(1:i,1:i) = im(1:i,1:i);
+    imgBlurry(:,:,i-169) = idct2(imTmp);
 end
 
 j = 1;
@@ -706,27 +707,26 @@ for i = curSlice:locNum:n
     ssimLocal(j) = l^a + c^b + s^c;
     struEntire(j) = s;
     
-    for k = 1:10
-        tmp = corrcoef(imgBlurry(:,:,k),img);
-        similarity(k) = tmp(2);
+    for p = 1:(k-170+1)
+        tmp = corrcoef(imgBlurry(:,:,p),img);
+        similarity(p) = tmp(2);
     end
-    tmp = find(similarity == max(similarity));
+    tmp = find(similarity == max(similarity))+170-1;
     defnEntire(j) = tmp(1);
     
     j = j + 1;
 end
 
+struEntire = (struEntire-min(struEntire))/(max(struEntire)-min(struEntire));
+defnEntire = (defnEntire-min(defnEntire))/(max(defnEntire)-min(defnEntire))+1;
+ssimLocal = (ssimLocal-min(ssimLocal))/(max(ssimLocal)-min(ssimLocal))+2;
 handles.uidata.scores(curSlice,:,1) = struEntire;
 handles.uidata.scores(curSlice,:,2) = defnEntire;
 handles.uidata.scores(curSlice,:,3) = ssimLocal;
 
-axes(handles.axesStat);
-plot(ssimLocal),hold on,plot(struEntire),plot(defnEntire),hold off;
-set(handles.txtStructureScore,'String',['structure ' sprintf('%.2f',struEntire(curSeries))]);
-set(handles.txtComprehensiveScore,'String',['comprehensive ' sprintf('%.2f',ssimLocal(curSeries))]);
-
+loadDcmImages(handles);
 guidata(hObject,handles);
-    
+toc
 
 % --- Executes on mouse press over axes background.
 function axesImg_ButtonDownFcn(hObject, eventdata, handles)

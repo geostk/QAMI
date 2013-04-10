@@ -32,10 +32,16 @@ if (handles.uidata.isDrawingRoi == 0)
         set(handles.txtStructureScore,'String',['structure ' sprintf('%.2f',tmp(curSeries,1))]);
         set(handles.txtComprehensiveScore,'String',['comprehensive ' sprintf('%.2f',tmp(curSeries,3))]);
         axes(handles.axesStat);
-        plot(tmp(:,1)),hold on,plot(tmp(:,2)/5),plot(tmp(:,3));
-        plot(curSeries,tmp(curSeries,1),'r*');
-        plot(curSeries,tmp(curSeries,2),'r*');
-        plot(curSeries,tmp(curSeries,3),'r*');
+%         plot(x,y,'--rs','LineWidth',2,...
+%                 'MarkerEdgeColor','k',...
+%                 'MarkerFaceColor','g',...
+%                 'MarkerSize',10)
+        plot(tmp(:,1),'-r'),hold on,plot(tmp(:,2),'-g'),plot(tmp(:,3),'-b');
+        hlg = legend('structure','definition','comprehensive');
+        set(hlg,'Location','SouthEast');
+        plot(curSeries,tmp(curSeries,1),'s','MarkerEdgeColor','k','MarkerFaceColor','g');
+        plot(curSeries,tmp(curSeries,2),'s','MarkerEdgeColor','k','MarkerFaceColor','g');
+        plot(curSeries,tmp(curSeries,3),'s','MarkerEdgeColor','k','MarkerFaceColor','g');
         hold off;
     else
         set(handles.txtStructureScore,'String','');
