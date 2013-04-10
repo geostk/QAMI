@@ -195,6 +195,7 @@ if ((fname~=0))
     handles.uidata.curSeries = 1;
     handles.uidata.curSlice = 1;
     handles.uidata.allRoi = zeros(n,4);
+    handles.uidata.scores = zeros(handles.uidata.locationNumber,handles.uidata.timeNumber,3);    
     handles.uidata.flagGoodQual = zeros(handles.uidata.timeNumber,handles.uidata.locationNumber);
     handles = loadDcmImages(handles);
     set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
@@ -212,10 +213,6 @@ if ((fname~=0))
     set(handles.sldSeries,'sliderstep',[1/(maxValue-minValue) 1/(maxValue-minValue)]);
     set(handles.sldSeries,'value',minValue);
     set(handles.sldSeries,'visible','on');
-%     %set the position of axes
-%     set(handles.axesImg,'Position',[0.13 0.4 0.4 0.59]);
-%     set(handles.axesStat,'Position',[0.57 0.4 0.4 0.59]);
-    
     
     guidata(hObject,handles);
 end
@@ -672,18 +669,30 @@ end
 
 dcmInfo = handles.uidata.dcmInfo;
 locNum = handles.uidata.locationNumber;
+timeNum = handles.uidata.timeNumber;
 n = length(dcmInfo);
-j = 1;
+
 
 refImg = double(dicomread(dcmInfo{curIndex}));% 需正确性验证
 refImgLocal = refImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
 refImgLocal = refImgLocal(:);
-refImg = refImg(:);
+%refImg = refImg(:);
+
+%===============================================
+imgBlurry(:,:,1) = refImg;
+im = dct2(refImg);
+[k s] = size(refImg);
+imgBlurry(:,:,1) = refImg;
+for i = 2:10
+    im(k-i*7-70:end,s-i*7-70:end) = 0;
+    imgBlurry(:,:,i) = idct2(im);
+end
+
+j = 1;
 for i = curSlice:locNum:n
     img = double(dicomread(dcmInfo{i}));
     imgLocal = img(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
     imgLocal = imgLocal(:);
-    img = img(:);
     
     a1 =0.01;a2 = 0.01;a3 =0.01;
     a = 0.1; b = 0.2; c = 0.7;
@@ -695,61 +704,28 @@ for i = curSlice:locNum:n
     c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
     s = (2*c12+a3)/(c1*c2+a3);
     ssimLocal(j) = l^a + c^b + s^c;
+    struEntire(j) = s;
     
-    t3 = corrcoef(refImgLocal,imgLocal);
-    corrLocal(j) = t3(2);
-    contr(j) = cmptContr(img);
-%     arrEntropy(j) = entropy(double(img));
+    for k = 1:10
+        tmp = corrcoef(imgBlurry(:,:,k),img);
+        similarity(k) = tmp(2);
+    end
+    tmp = find(similarity == max(similarity));
+    defnEntire(j) = tmp(1);
+    
     j = j + 1;
 end
 
-ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
-corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
+handles.uidata.scores(curSlice,:,1) = struEntire;
+handles.uidata.scores(curSlice,:,2) = defnEntire;
+handles.uidata.scores(curSlice,:,3) = ssimLocal;
 
-ssimIndex = doubleInd2singleInd(curSlice,ssimMax,handles);
-%尝试对参考图像分10级进行模糊，比较其他图像与这10级中哪一级相似，也就确定了该图像的模糊程度
-imgRef =  double(dicomread(dcmInfo{curIndex}));
-imgBlurry(:,:,1) = imgRef;
-im = dct2(imgRef);
-[m n] = size(imgRef);
-imgBlurry(:,:,1) = imgRef;
-for i = 2:10
-    im(m-i*7-70:end,n-i*7-70:end) = 0;
-    imgBlurry(:,:,i) = idct2(im);
-end
-% for i = 2:10
-%     %filt = fspecial('motion',i*1.9,theta);
-%     filt = fspecial('gaussian',3,(i-1)*0.1);
-%     imgBlurry(:,:,i) = imfilter(imgRef,filt,'circular');
-% end
-num = length(ssimIndex);
-for p = 1:num
-    img = double(dicomread(dcmInfo{ssimIndex(p)}));
-    for i = 1:10
-        tmp = corrcoef(imgBlurry(:,:,i),img);
-        similarity(i) = tmp(2);
-    end
-    tmp = find(similarity == max(similarity));
-    blurDegree(p) = tmp(1);
-end
-tmp = blurDegree;
-tmp(tmp==min(tmp)) = [];
-t = min(tmp);
-ssimIndex = ssimIndex(blurDegree <= t);
-ssimMax = ssimMax(blurDegree <= t);
-%====================================
-for i=1:length(ssimIndex)
-    img = double(dicomread(dcmInfo{ssimIndex(i)}));
-    tmp = corrcoef(imgBlurry(:,:,1),img);
-    scores(i) = tmp(2);
-end
-scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
-%scores = vpa(scores,3);
-%====================================
-%compute the similarity again for the images in ssimMax
-%4 arguments:single index, series numbers, scores for them, num of images in current location.
-indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
+axes(handles.axesStat);
+plot(ssimLocal),hold on,plot(struEntire),plot(defnEntire),hold off;
+set(handles.txtStructureScore,'String',['structure ' sprintf('%.2f',struEntire(curSeries))]);
+set(handles.txtComprehensiveScore,'String',['comprehensive ' sprintf('%.2f',ssimLocal(curSeries))]);
 
+guidata(hObject,handles);
     
 
 % --- Executes on mouse press over axes background.

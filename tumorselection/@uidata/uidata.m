@@ -40,6 +40,7 @@ classdef uidata
         curPt1
         curPt2
         isDrawingRoi
+        scores
         
         contrast
         luminosity

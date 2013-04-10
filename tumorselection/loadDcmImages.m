@@ -1,25 +1,51 @@
-
 function [handles]=loadDcmImages(handles)
 %todo:1. get the lumin,contrast,curSeries,curSlice,flagGoodQual,allRoi
-%todo:2. set the min max property of sldWinWidth and sldWinCenter,respectively
-%todo:3. process the oriImg according to the window width and window
+%todo:2. if handles.uidata.scores has information, set the two txt,and
+%        update the axesStat. Otherwise, clear the txt and axesStat;
+%todo:3. set the min max property of sldWinWidth and sldWinCenter,respectively
+%todo:4. process the oriImg according to the window width and window
 %        center.if the image needs segment and the state of tglBtnSegShow is on
 %        ,call ostu to get the threshold,select the object and set it to 
 %        max value,then show it.
-%todo:4. if the image was marked goodqual,draw the yellow box around it.
+%todo:5. if the image was marked goodqual,draw the yellow box around it.
 %        if the image has ori, draw ori box,update the ckbGoodQual
 %        control,then display the histogram of the ori
 
+%% todo1
 curSeries = handles.uidata.curSeries;
 curSlice = handles.uidata.curSlice;
 curIndex = doubleInd2singleInd(curSlice,curSeries,handles);
 curSegSlice = handles.uidata.curSegSlice;
+scores = handles.uidata.scores;
 % luminosity = handles.uidata.luminosity;
 % contrasts = handles.uidata.contrast;
 flagGoodQual = handles.uidata.flagGoodQual(curSeries,curSlice);
 curRoi = floor(handles.uidata.allRoi(curIndex,:));
 curSliceRoi = floor(handles.uidata.curSliceRoi);
 
+%% todo2
+tmp = scores(curSlice,:,:);
+[a m n] = size(tmp);
+tmp = reshape(tmp,m,n);
+if (handles.uidata.isDrawingRoi == 0)
+    if sum(tmp(:)) > 0
+        set(handles.txtStructureScore,'String',['structure ' sprintf('%.2f',tmp(curSeries,1))]);
+        set(handles.txtComprehensiveScore,'String',['comprehensive ' sprintf('%.2f',tmp(curSeries,3))]);
+        axes(handles.axesStat);
+        plot(tmp(:,1)),hold on,plot(tmp(:,2)/5),plot(tmp(:,3));
+        plot(curSeries,tmp(curSeries,1),'r*');
+        plot(curSeries,tmp(curSeries,2),'r*');
+        plot(curSeries,tmp(curSeries,3),'r*');
+        hold off;
+    else
+        set(handles.txtStructureScore,'String','');
+        set(handles.txtComprehensiveScore,'String','');
+        axes(handles.axesStat);
+        plot([1 1],[0 0]);
+    end
+end
+
+%% todo3
 oriImg = double(dicomread(handles.uidata.dcmInfo{curIndex}));
 maxx=max(max(oriImg));
 minn=min(min(oriImg));
@@ -39,6 +65,7 @@ if (tmpW > (maxx-minn))
     set(handles.sldWinWidth,'value',maxx-minn); 
 end
 
+%% todo4
 imgToShow = visualProcess(oriImg,handles);
 tglBtnSegShowState = get(handles.tglBtnSegShow,'Value');
 if curSlice == curSegSlice && tglBtnSegShowState == 1
@@ -54,7 +81,7 @@ if curSlice == curSegSlice && tglBtnSegShowState == 1
 end
 imshow(imgToShow,'parent',handles.axesImg);
 
-% pos = get(handles.axesImg,'position');
+%% todo5
 tpos(1) = 256; tpos(2) = 1; tpos(3) = 1; tpos(4) = 256;
 tglDrawState = get(handles.tglBtnDrawRoi,'Value');
 if flagGoodQual == 1 && handles.uidata.isDrawingRoi == 0
@@ -62,30 +89,19 @@ if flagGoodQual == 1 && handles.uidata.isDrawingRoi == 0
 end
 if sum(curRoi)>0 && handles.uidata.isDrawingRoi == 0
     drawBoxes(handles.axesImg,curRoi,[0 1 0]);
-    if curRoi(1) >= 0 && curRoi(2) > 0 && curRoi(3) > 0 && curRoi(4) > 0 && abs(curRoi(1) - curRoi(2))>0....
-        && abs(curRoi(3) - curRoi(4)) > 0
-        axes(handles.axesStat);
-        roiRegion = uint16(oriImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4)));
-        maxValue = max(max(roiRegion));
-        minValue = min(min(roiRegion));
-        [counts x] = imhist(roiRegion,65536);
-        imhist(roiRegion,65536);
-        set(gca,'xlim',[minValue maxValue],'ylim' ,[0 max(counts)]);
-    else
-        axes(handles.axesStat);
-        plot([1 1],[0 0]);
-    end
+%     if curRoi(1) >= 0 && curRoi(2) > 0 && curRoi(3) > 0 && curRoi(4) > 0 && abs(curRoi(1) - curRoi(2))>0....
+%         && abs(curRoi(3) - curRoi(4)) > 0
+%         axes(handles.axesStat);
+%         roiRegion = uint16(oriImg(curRoi(2):curRoi(1),curRoi(3):curRoi(4)));
+%         maxValue = max(max(roiRegion));
+%         minValue = min(min(roiRegion));
+%         [counts x] = imhist(roiRegion,65536);
+%         imhist(roiRegion,65536);
+%         set(gca,'xlim',[minValue maxValue],'ylim' ,[0 max(counts)]);
+%     else
+%         axes(handles.axesStat);
+%         plot([1 1],[0 0]);
+%     end
 end
 set(handles.ckbGoodQual,'Value',flagGoodQual);
-
-% set(handles.edtDispNumTime,'String',num2str(handles.uidata.curSeries));
-% set(handles.lbFileList,'Value',doubleInd2singleInd(handles.uidata.curSlice,handles.uidata.curSeries,handles));
-% set(handles.tglBtnDrawRoi,'Value',0);
-% 
-% set(handles.sldSeries,'value',curSeries);
-% minValue = get(handles.sldSlice,'min');
-% maxValue = get(handles.sldSlice,'max');
-% set(handles.sldSlice,'value',minValue + maxValue - curSlice);
-% 
-% guidata(hObject,handles);
 
