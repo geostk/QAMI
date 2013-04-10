@@ -728,21 +728,21 @@ imgMin = double(dicomread(dcmInfo{ssimIndex(minIndex)}));
 
 num = length(ssimIndex);
 freImgRef = dct2(imgRef);
-for p = 5:num
+for p = 1:num
     img = double(dicomread(dcmInfo{ssimIndex(p)}));
-    approximateFrequency(freImgRef,img);
+    blurDegree(p) = approximateFrequency(freImgRef,img)*(-1);
 end
 % 临时代码======================
 figure,plot(blurDegree,'-*'),hold on;
 for i = 1:num
-    text(i,blurDegree(i),num2str(ssimMax(i)));
+    text(i,blurDegree(i),num2str(i));
 end
 % ======================
-tmp = blurDegree;
-tmp(tmp==min(tmp)) = [];
-t = min(tmp);
-ssimIndex = ssimIndex(blurDegree <= t);
-ssimMax = ssimMax(blurDegree <= t);
+% tmp = blurDegree;
+% tmp(tmp==min(tmp)) = [];
+% t = min(tmp);
+% ssimIndex = ssimIndex(blurDegree <= t);
+% ssimMax = ssimMax(blurDegree <= t);
 %====================================
 for i=1:length(ssimIndex)
     img = double(dicomread(dcmInfo{ssimIndex(i)}));
@@ -756,11 +756,8 @@ scores = 3*(scores - min(scores))/(max(scores) - min(scores)) + 7;
 %4 arguments:single index, series numbers, scores for them, num of images in current location.
 indices = HighQualitySelection(dcmInfo{ssimIndex},ssimMax,scores,length(dcmInfo)/locNum,handles);
 
-    
-function approximateFrequency(freImgRef,im2)
-%todo:1. 
-%todo:2.
 
+function [defn] = approximateFrequency(freImgRef,im2)
 [m n] = size(freImgRef);
 tmp = freImgRef;
 tmp1 = zeros(m,n);
@@ -768,14 +765,15 @@ j=1;
 for i = 180:m
     tmp1(1:i,1:i) = tmp(1:i,1:i);
     im1Degreded = idct2(tmp1);
-    tmpc = mi(im1Degreded,im2,'归一化互信息');
-    similarity(j) = tmpc(1);
+    tmpc = corrcoef(im1Degreded,im2);
+    %tmpc = mi(im1Degreded,im2,'归一化互信息');
+    similarity(j) = tmpc(2);
     j = j+1;
 end
-figure(1),plot(similarity,'-'),hold on;
-i = find(similarity == max(similarity));
-j = max(similarity);
-text(i(1),j,'v');
+%figure(1),plot(similarity,'-'),hold on;
+defn = find(similarity == max(similarity)) + 180;
+% j = max(similarity);
+% text(i(1),j,'v');
 % for i = 1:length(similarity)
 %     text(i,similarity(i),num2str(i));
 % end
