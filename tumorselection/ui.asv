@@ -704,26 +704,11 @@ for i = curSlice:locNum:n
     stats = graycoprops(glcms,'Contrast Correlation Energy');
     texture(1,j) = stats.Contrast;
     texture(2,j) = stats.Correlation;
-    texture(3,j) = stats.Energy;
+    texture(3,j) = stats;    
 %     arrEntropy(j) = entropy(double(img));
     j = j + 1;
 end
-figure(1);
-for i=1:181
-    text(i,texture(1,i),num2str(i));
-end
-title('contrast');
-figure(2);
-for i=1:181
-    text(i,texture(2,i),num2str(i));
-end
-title('corelation');
-figure(3);
-for i=1:181
-    text(i,texture(3,i),num2str(i));
-end
-title('energy');
-%figure,plot(texture(1,:),'r-*'),hold on,plot(texture(2,:),'g-*'),plot(texture(3,:),'b-*');
+
 ssimMax = find(diff(sign(diff(ssimLocal)))<0) + 1;
 corrMax = find(diff(sign(diff(corrLocal)))<0) + 1;
 
