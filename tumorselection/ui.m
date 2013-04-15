@@ -684,9 +684,11 @@ im = dct2(refImg);
 [k s] = size(refImg);
 imgBlurry(:,:,1) = refImg;
 imTmp = zeros(k,s);
-for i = 170:k
+j=1;
+for i = 170:2:k
     imTmp(1:i,1:i) = im(1:i,1:i);
-    imgBlurry(:,:,i-169) = idct2(imTmp);
+    imgBlurry(:,:,j) = idct2(imTmp);
+    j = j+1;
 end
 
 j = 1;
@@ -707,7 +709,7 @@ for i = curSlice:locNum:n
     ssimLocal(j) = l^a + c^b + s^c;
     struEntire(j) = s;
     
-    for p = 1:(k-170+1)
+    for p = 1:size(imgBlurry,3)
         tmp = corrcoef(imgBlurry(:,:,p),img);
         similarity(p) = tmp(2);
     end
