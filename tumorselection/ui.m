@@ -687,14 +687,14 @@ for i = curSlice:locNum:n
     imgLocal = imgLocal(:);
     
     a1 =0.01;a2 = 0.01;a3 =0.01;
-    cw = 0.1; dw = 0.5; sw = 0.4;
+    cw = 0.1; dw = 0.4; sw = 0.5;
     %u1 = mean(refImgLocal);u2 = mean(imgLocal);
     c1 = std(refImgLocal);c2 = std(imgLocal);
     c12_tmp = cov(refImgLocal,imgLocal);
     c12 = c12_tmp(2);
     %l = (2*u1*u2+a1)/(u1*u1+u2*u2+a1);
     c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
-    d = iqa(img(curRoi(2):curRoi(1),curRoi(3):curRoi(4)),h);
+    d = iqa(img,h);
     s = (c12+a3)/(c1*c2+a3);
     cdsLocal(j) = c^cw + d^dw + s^sw;
     struEntire(j) = s;
