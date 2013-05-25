@@ -679,52 +679,36 @@ refImgLocal = refImgLocal(:);
 %refImg = refImg(:);
 
 %===============================================
-imgBlurry(:,:,1) = refImg;
-im = dct2(refImg);
-[k s] = size(refImg);
-imgBlurry(:,:,1) = refImg;
-imTmp = zeros(k,s);
-j=1;
-for i = 170:2:k
-    imTmp(1:i,1:i) = im(1:i,1:i);
-    imgBlurry(:,:,j) = idct2(imTmp);
-    j = j+1;
-end
-
 j = 1;
+h = fspecial('gaussian',5,2);
 for i = curSlice:locNum:n
     img = double(dicomread(dcmInfo{i}));
     imgLocal = img(curRoi(2):curRoi(1),curRoi(3):curRoi(4));
     imgLocal = imgLocal(:);
     
     a1 =0.01;a2 = 0.01;a3 =0.01;
-    a = 0.1; b = 0.2; c = 0.7;
-    u1 = mean(refImgLocal);u2 = mean(imgLocal);
+    cw = 0.1; dw = 0.5; sw = 0.4;
+    %u1 = mean(refImgLocal);u2 = mean(imgLocal);
     c1 = std(refImgLocal);c2 = std(imgLocal);
     c12_tmp = cov(refImgLocal,imgLocal);
     c12 = c12_tmp(2);
-    l = (2*u1*u2+a1)/(u1*u1+u2*u2+a1);
+    %l = (2*u1*u2+a1)/(u1*u1+u2*u2+a1);
     c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
-    s = (2*c12+a3)/(c1*c2+a3);
-    ssimLocal(j) = l^a + c^b + s^c;
+    d = iqa(img(curRoi(2):curRoi(1),curRoi(3):curRoi(4)),h);
+    s = (c12+a3)/(c1*c2+a3);
+    cdsLocal(j) = c^cw + d^dw + s^sw;
     struEntire(j) = s;
-    
-    for p = 1:size(imgBlurry,3)
-        tmp = corrcoef(imgBlurry(:,:,p),img);
-        similarity(p) = tmp(2);
-    end
-    tmp = find(similarity == max(similarity))+170-1;
-    defnEntire(j) = tmp(1);
+    defnEntire(j) = d;
     
     j = j + 1;
 end
 
 struEntire = (struEntire-min(struEntire))/(max(struEntire)-min(struEntire));
 defnEntire = (defnEntire-min(defnEntire))/(max(defnEntire)-min(defnEntire))+1;
-ssimLocal = (ssimLocal-min(ssimLocal))/(max(ssimLocal)-min(ssimLocal))+2;
+cdsLocal = (cdsLocal-min(cdsLocal))/(max(cdsLocal)-min(cdsLocal))+2;
 handles.uidata.scores(curSlice,:,1) = struEntire;
 handles.uidata.scores(curSlice,:,2) = defnEntire;
-handles.uidata.scores(curSlice,:,3) = ssimLocal;
+handles.uidata.scores(curSlice,:,3) = cdsLocal;
 
 loadDcmImages(handles);
 guidata(hObject,handles);
