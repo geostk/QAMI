@@ -9,8 +9,8 @@ function score = iqa(im,h)
     [m,n] = size(im);
     
     s = 0;
-    for i = 2:2:m-1
-        for j = 2:2:n-1
+    for i = 2:m-1
+        for j = 2:n-1
             if bw(i,j) == 1
                 matIm = im(i-1:i+1,j-1:j+1);
                 matImblurred = imblurred(i-1:i+1,j-1:j+1);
