@@ -694,7 +694,8 @@ for i = curSlice:locNum:n
     c12 = c12_tmp(2);
     %l = (2*u1*u2+a1)/(u1*u1+u2*u2+a1);
     c = (2*c1*c2+a2)/(c1*c1+c2*c2+a2);
-    d = iqa(img,h);
+    %d = iqa(img,h);
+    d = blurPerception(img);
     s = (c12+a3)/(c1*c2+a3);
     cdsLocal(j) = c^cw + d^dw + s^sw;
     struEntire(j) = s;
@@ -702,6 +703,8 @@ for i = curSlice:locNum:n
     
     j = j + 1;
 end
+
+%save score.mat defnEntire
 
 struEntire = (struEntire-min(struEntire))/(max(struEntire)-min(struEntire));
 defnEntire = (defnEntire-min(defnEntire))/(max(defnEntire)-min(defnEntire))+1;
